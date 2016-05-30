@@ -1,0 +1,13 @@
+For the server application dowload:
+  opengalaxy-server_*.deb
+  opengalaxy-common_*.deb
+  opengalaxy-data_*.deb
+
+For the client application download:
+  opengalaxy-client_*.deb
+  opengalaxy-common_*.deb
+
+For the Certificate Manager download:
+  opengalaxy-certificates-manager_*.deb
+  opengalaxy-common_*.deb
+
