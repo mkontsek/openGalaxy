@@ -1,0 +1,48 @@
+From 8d8a400a49c496d7e7fc4c6478a158d168f8b62c Mon Sep 17 00:00:00 2001
+From: Alexander Bruines <alexander.bruines@gmail.com>
+Date: Sun, 17 Apr 2016 16:52:09 +0200
+Subject: [PATCH] Adds lws_get_ssl()
+
+---
+ lib/libwebsockets.h | 5 +++++
+ lib/ssl.c           | 8 ++++++++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/lib/libwebsockets.h b/lib/libwebsockets.h
+index 5265dc9..84b4c3d 100644
+--- a/lib/libwebsockets.h
++++ b/lib/libwebsockets.h
+@@ -2143,6 +2143,11 @@ lws_ext_parse_options(const struct lws_extension *ext, struct lws *wsi,
+ LWS_VISIBLE LWS_EXTERN void
+ lws_set_allocator(void *(*realloc)(void *ptr, size_t size));
+ 
++#ifdef LWS_OPENSSL_SUPPORT
++LWS_VISIBLE LWS_EXTERN SSL*
++lws_get_ssl(struct lws *wsi);
++#endif
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/lib/ssl.c b/lib/ssl.c
+index 2be1a0a..99fdd95 100644
+--- a/lib/ssl.c
++++ b/lib/ssl.c
+@@ -21,6 +21,14 @@
+ 
+ #include "private-libwebsockets.h"
+ 
++#if defined(LWS_OPENSSL_SUPPORT)
++LWS_VISIBLE SSL*
++lws_get_ssl(struct lws *wsi)
++{
++	return wsi->ssl;
++}
++#endif
++
+ #if defined(LWS_USE_POLARSSL)
+ static const int ciphers[] =
+ {
+-- 
+2.1.4
+

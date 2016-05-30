@@ -1,0 +1,262 @@
+opengalaxy - a SIA receiver for Galaxy security control panels.
+Copyright (C) 2015 - 2016 Alexander Bruines <alexander.bruines@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2 as
+as published by the Free Software Foundation, or (at your option)
+any later version.
+
+In addition, as a special exception, the author of this program
+gives permission to link the code of its release with the OpenSSL
+project's "OpenSSL" library (or with modified versions of it that
+use the same license as the "OpenSSL" library), and distribute the
+linked executables. You must obey the GNU General Public License
+in all respects for all of the code used other than "OpenSSL".
+If you modify this file, you may extend this exception to your
+version of the file, but you are not obligated to do so.
+If you do not wish to do so, delete this exception statement
+from your version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+INDEX:
+======
+
+- About openGalaxy
+- Acknoledgements
+- Note about the diffrent lines of Galaxy panels
+- NEW IN THIS VERSION
+- Installing openGalaxy
+- Preparing, configuring and using openGalaxy
+- Using the MySQL database created by openGalaxy
+- Building openGalaxy from source:
+
+(Consult the changelog file for changes between versions of openGalaxy.)
+
+
+
+About openGalaxy:
+=================
+
+openGalaxy is a software tool that listens on a serial port for incoming
+SIA formatted alarm messages from a Galaxy security control panel. These
+messages are sent to a websocket interface and may optionally be stored
+in a MySQL database and/or (on Linux) forwarded by email.
+
+This software is written for use by trained security professionals, but 
+it could also be used by a layperson who wants to receive the exact same
+messages that are normally send to a private emergency response company.
+
+In addition to just listening for messages, openGalaxy can also be used
+to (depending on the panels firmware version) arm and disarm areas,
+omit zones, (re)set outputs and even change the programming of zones.
+
+This requires the 'remote' code to access the panel. A complete list of
+commands can be found in the file 'API.TXT'
+
+More information about Galaxy control panels can be found on the
+manufacturers website for the european market:
+http://www.security.honeywell.com/uk/
+
+
+
+Acknoledgements:
+================
+
+openGalaxy is based in part on the work of the libwebsockets project
+(http://libwebsockets.org)
+
+openGalaxy makes use of MySQL Connector/C 6.1 (libmysqlclient) which is
+released under the GNU General Public License version 2 and Copyright (c)
+2000, 2015, Oracle and/or its affiliates. All rights reserved.
+
+This product includes software developed by the OpenSSL Project for
+use in the OpenSSL Toolkit. (http://www.openssl.org/)
+
+openGalaxy is based in part on the work of the wolfSSL project which is
+released under the GNU General Public License version 2
+(http://www.wolfssl.com/)
+
+This product makes use of zlib. openGalaxy gratefully acknoledges the
+contributions of Jean-loup Gailly and Mark Adler in creating the zlib
+general purpose compresssion library.
+
+openGalaxy uses GTK+ 3.0. GTK+ is covered by the GNU Lesser General
+Public License (http://www.gtk.org/)
+
+openGalaxy uses jQuery and jQuery-UI whitch are provided under the
+MIT license (http://jquery.org/license/).
+
+openGalaxy uses the GNOME Adwaita icon theme witch is released under the
+the terms of either the GNU LGPL v3 or Creative Commons Attribution-Share
+Alike 3.0 United States License.
+
+
+
+Note about the different lines of Galaxy panels:
+================================================
+
+Galaxy security panels have always been backwards compatible
+(with the exception of G2 panels). The oldest class of panels are now
+called XL (or classic) panels and the new ones G2, G3, Dimension 
+and Galaxy Flex.
+
+The Galaxy XL panels may not support all of the functionality
+provided by openGalaxy. Their level of support depends on the firmware
+version of each of these panels.
+
+I have only been able to test with the panels at my disposal so I do'nt
+know about every quirk and caveat, you will have to test that out
+for yourself.
+
+On my Galaxy 18 v1.07 for instance the outputs may only be set by type and 
+not by address. Also the area and output status can not be fetched or
+seems to work but doesn't.
+
+The newest panel that I can test with is a G3-520 v5.57. All functions in
+openGalaxy work on this panel and should also work on the newer
+(Dimension) panels.
+
+G2 panels are not supported!
+The README for openGalaxy version 0.11 stated that G2 panels are supported,
+this turns out to be false. The 'INTRUDER G2-44 RS232 LEAD' (model A228)
+cable for these panels can only be used to service the panel,
+it does not provide SIA access.
+
+Galaxy Flex:
+I have never seen one myself (yet), but from what I'm hearing openGalaxy
+should also (partially) work with 'Galaxy Flex' panels. Commands can be
+send to the panel, but there is no possibility of receiving messages from
+the panel (Please correct me if I am wrong!!).
+
+
+
+NEW IN THIS VERSION:
+====================
+
+0.14:
+
+A lot of bugfixes and much better handling of username/password.
+Due to this improvement, automaticly logging off after a specified amount
+of time now works reliably and is turned on by default in SSL mode.
+
+The server application now detects if there are SSL certificates installed
+and automaticly starts in plain HTTP mode if they cannot be found.
+
+The certificate manager application is now able to upload the required SSL
+certificates to any running openGalaxy server. After uploading the server
+will restart in full SSL mode. After initial installation this can also be
+used to update the server when a client certificate has been revoked or to
+renew the server certificate.
+
+The configuration file has several new variables that can be modified.
+
+In the next version of openGalaxy I would like to implement some means of
+assigning privileges to individual users to only allow access to certain
+areas, zones, outputs, uploading of certificates ...
+It would be nice if I can manage to use OCSP instead of a basic CRL cert.
+
+Also the client program will finally get some much needed attention,
+it seems to have some grahical glitches in the windows version right now (but
+it will likely be completely re-written anyway). It would be nice if I can
+figure out how to use the .crt and .pfx files with the client application
+instead of using the .pem files...
+
+
+Installing openGalaxy:
+======================
+
+For Windows: Use the installer executable.
+
+For Debian and Ubuntu:
+
+  Build or download all .deb packages and run:
+    sudo apt-get install libmysqlclient18 menu menu-xdg openssl libssl
+    sudo dpkg -i *.deb
+
+For Raspbian:
+
+  Build or download all .deb packages and run:
+    sudo apt-get install libmysqlclient18 menu menu-xdg openssl libssl1.0.0
+    sudo dpkg -i *.deb
+
+
+  The openGalaxy applications are now available in your menu as:
+    Debian -> Applications -> System -> Security -> openGalaxy*
+
+  Or they may be executed from the commandline as:
+    opengalaxy
+    opengalaxy-client
+    opengalaxy-ca
+
+For other Linux:
+
+  There is no installer, you must install from the sourcecode.
+  See README.BUILDING
+
+
+
+Preparing, configuring and using openGalaxy:
+============================================
+
+Several manual pages are provided to aid in preparing the SSL
+certificates, configuring both openGalaxy and the attached Galaxy
+security control panel and how to use the openGalaxy applications.
+
+On Linux these 'man' pages are accessible with the commands:
+
+man galaxy.conf
+man opengalaxy
+man opengalaxy-ca
+man opengalaxy-client
+
+On Windows a number of PDF document are installed in the programs
+directory:
+
+galaxy.conf.pdf
+opengalaxy.pdf
+openGalaxy_Certificate_Manager.pdf
+opengalaxy-client.pdf
+
+
+
+Using the MySQL database created by openGalaxy:
+===============================================
+
+To demonstrate displaying messages written to the MySQL database that
+openGalaxy creates, a small example webinterface for installation on a
+webserver (like apache2) is included in the example directory:
+
+It is written using php5, JQuery and JQuery UI and displays decoded SIA
+messages in a web browser as soon as they are written to a MySQL database.
+
+How to set up a web server is beyond the scope of this documentation, but
+the files in the example directory may be copied to the 'docroot' of your
+web server. The web server will need to support php5 and you'll need to
+adjust the settings in 'example/dbconnect.php'
+
+Note:
+ The example has not been tested in a long time, so it may or may not work...
+
+
+
+Building openGalaxy from source:
+================================
+
+If you are interested in building openGalaxy yourself then read the file:
+
+- "README-BUILDING"     For building openGalaxy on x86 Linux computers
+- "README-MSYS2.TXT"    For building openGalaxy on x86 Windows computers
+- "README-RaspberryPi"  For building openGalaxy on the Raspberry Pi
+
+These readme files are included with the source distribution.
+
+

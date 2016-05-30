@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=@PACKAGE_VERSION@
+Name=openGalaxy
+GenericName=openGalaxy Client
+Icon=/usr/share/icons/Adwaita/48x48/apps/utilities-system-monitor.png
+Exec=/usr/bin/opengalaxy-client
+Categories=System;

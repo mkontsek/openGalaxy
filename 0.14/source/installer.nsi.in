@@ -1,0 +1,668 @@
+; opengalaxy - a SIA receiver for Galaxy security control panels.
+; Copyright (C) 2015, Alexander Bruines <alexander.bruines@gmail.com>
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License version 2 as
+; as published by the Free Software Foundation, or (at your option)
+; any later version.
+;
+; In addition, as a special exception, the author of this program
+; gives permission to link the code of its release with the OpenSSL
+; project's "OpenSSL" library (or with modified versions of it that
+; use the same license as the "OpenSSL" library), and distribute the
+; linked executables. You must obey the GNU General Public License
+; in all respects for all of the code used other than "OpenSSL".
+; If you modify this file, you may extend this exception to your
+; version of the file, but you are not obligated to do so.
+; If you do not wish to do so, delete this exception statement
+; from your version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;
+
+; NSIS installation script for openGalaxy
+
+!define APPNAME "openGalaxy"
+!define COMPANYNAME ""
+!define DESCRIPTION "SIA receiver for Galaxy security control panels"
+!define VERSIONMAJOR @PACKAGE_VERSION_MAJOR@
+!define VERSIONMINOR @PACKAGE_VERSION_MINOR@
+!define VERSIONBUILD @PACKAGE_VERSION_MICRO@
+!define VERSION @PACKAGE_VERSION@
+!define HELPURL ""
+!define UPDATEURL "@PACKAGE_URL@" # "Product Updates" link
+!define ABOUTURL ""
+
+Var BINDIR ; $INSTDIR\bin
+Var CFGINSTDIR ; Directory to store config files and SSL certs
+
+;--------------------------------
+;Includes
+
+  !include "MUI2.nsh"
+  !include "FileFunc.nsh"
+;  !include "Sections.nsh"
+
+;--------------------------------
+;General
+
+  ;Name, Icon and file
+  Name "${APPNAME}"
+  Icon "www/favicon.ico"
+  outFile "${APPNAME}-v${VERSION}-Installer-${OUTFILE_ARCH}.exe"
+
+  ;Get installation folder from registry if available
+  InstallDirRegKey HKCU "Software\${APPNAME}" ""
+
+  ;Request application privileges
+  RequestExecutionLevel admin
+
+;--------------------------------
+;Interface Settings
+
+  !define MUI_ABORTWARNING
+
+;--------------------------------
+;Optionaly display README.1st when finished
+;Optionaly execute openGalaxyCA when finished
+
+!define MUI_FINISHPAGE
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "Open Quickstart Guide?"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.1ST.TXT"
+!define MUI_FINISHPAGE_LINK "Visit openGalaxy on SourceForge for updates."
+!define MUI_FINISHPAGE_LINK_LOCATION "http://sourceforge.net/projects/galaxy4linux/"
+!define MUI_FINISHPAGE_RUN_TEXT "Create SSL certificates?"
+!define MUI_FINISHPAGE_RUN "$BINDIR\opengalaxy-ca.exe"
+!define MUI_FINISHPAGE_NOREBOOTSUPPORT
+
+;--------------------------------
+;Pages
+
+  !insertmacro MUI_PAGE_LICENSE "COPYING.txt"
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_DIRECTORY
+
+  !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to store the configuration files and SSL certificates that openGalaxy uses."
+  !define MUI_DIRECTORYPAGE_TEXT_TOP "The installer will install the configuration file(s) and SSL certificates that openGalaxy uses in the following folder.$\n$\nTo install in a differenct folder, click Browse and select another folder. Click Next to continue."
+  !define MUI_DIRECTORYPAGE_VARIABLE $CFGINSTDIR
+  !insertmacro MUI_PAGE_DIRECTORY
+
+  !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH
+  
+;--------------------------------
+;Languages
+ 
+  !insertmacro MUI_LANGUAGE "English"
+
+;--------------------------------
+;Installer Sections
+
+Section "openGalaxy (server)" SectionOpenGalaxy
+  ;
+  ; Install openGalaxy executable
+  SetOutPath "$BINDIR"
+  file /r "opengalaxy.exe"
+  file /nonfatal /r "libmysql.dll"
+  SetOutPath "$INSTDIR"
+  file /r "opengalaxy.pdf"
+  file /r "galaxy.conf.pdf"
+  ;
+  ; Create the www root directory
+  createDirectory "$INSTDIR\www"
+  ;
+  ; Install www files to the www-root
+  setOutPath "$INSTDIR\www"
+  file /r "www\*"
+  ;
+  ; Install configuration files
+  setOutPath "$CFGINSTDIR"
+  file /r /x "passphrase.txt" "galaxy\*"
+  SetOutPath "$INSTDIR"
+  ;
+  ; Create the Start Menu shortcuts
+  createDirectory "$SMPROGRAMS\${APPNAME}"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\openGalaxy (Server).lnk" "cmd.exe" "/k $\"$BINDIR\opengalaxy.exe$\"" "$BINDIR\opengalaxy.exe"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\Configuration editor.lnk" "notepad.exe" "$CFGINSTDIR\galaxy.conf" "$BINDIR\opengalaxy.exe"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\openGalaxy - Server Manual.lnk" "$INSTDIR\opengalaxy.pdf"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\galaxy.conf - Manual.lnk" "$INSTDIR\galaxy.conf.pdf"
+SectionEnd
+
+
+Section "openGalaxy (client)" SectionOpenGalaxyClient
+  setOutPath "$BINDIR"
+  file /r "opengalaxy-client.exe"
+  SetOutPath "$INSTDIR"
+  file /r "opengalaxy-client.pdf"
+  ;
+  ; Create the Start Menu shortcuts
+  createDirectory "$SMPROGRAMS\${APPNAME}"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\openGalaxy (Client).lnk" "$BINDIR\opengalaxy-client.exe" "" "$BINDIR\opengalaxy-client.exe"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\openGalaxy - Client Manual.lnk" "$INSTDIR\opengalaxy-client.pdf"
+SectionEnd
+
+
+Section "SSL Certificates Manager" SectionOpenGalaxyCA
+  setOutPath "$BINDIR"
+  file /r "opengalaxy-ca.exe"
+  file /r "openssl.exe"
+  setOutPath "$CFGINSTDIR"
+  file /r "galaxy\passphrase.txt"
+  SetOutPath "$INSTDIR"
+  file /r "openGalaxy Certificate Manager.pdf"
+  ;
+  ; Create the Start Menu shortcuts
+  createDirectory "$SMPROGRAMS\${APPNAME}"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\openGalaxy Certificate Manager.lnk" "$BINDIR\opengalaxy-ca.exe" "" "$BINDIR\opengalaxy-ca.exe"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\openGalaxy - Certificate Manager Manual.lnk" "$INSTDIR\openGalaxy Certificate Manager.pdf"
+SectionEnd
+
+
+Section "Desktop shortcuts" SectionDesktop
+  createShortCut "$DESKTOP\${APPNAME}.lnk" "file:///$SMPROGRAMS\${APPNAME}"
+SectionEnd
+
+
+Section "GTK+" SectionGtkRuntime
+  SetOutPath "$BINDIR"
+  file /nonfatal /r /x "libmysql.dll" "*.dll"
+  SetOutPath "$INSTDIR"
+SectionEnd
+
+
+Section "Adwaita" SectionGtkAdwaita
+  SetOutPath "$INSTDIR"
+  file /r "share"
+  SetOutPath "$INSTDIR"
+SectionEnd
+
+
+Section "Uninstaller" SectionAlwaysInstalled
+  ; Gray-out and pre-select this section in the GUI
+  SectionIn RO
+  ;
+  ; Create the program data directory tree (does not get deleted by uninstall)
+  createDirectory "$CFGINSTDIR\ssl\certs\users"
+  createDirectory "$CFGINSTDIR\ssl\private\users"
+  ;
+  ; Install Documentation
+  SetOutPath "$INSTDIR"
+  file /r "README.1ST.txt"
+  file /r "README.txt"
+  file /nonfatal /r "README.MySQL.txt"
+  file /r "changelog.txt"
+  file /r "COPYING.txt"
+  file /r "API.TXT"
+  SetOutPath "$INSTDIR"
+  ;
+  ; Create the registry entries used by openGalaxy
+  ;
+  ; Location the installation directory
+  WriteRegStr HKCU "Software\${APPNAME}" "openGalaxyDirectory" "$BINDIR"
+  ;WriteRegStr HKCU "Software\${APPNAME}" "openGalaxyCaDirectory" "$BINDIR"
+  ;
+  ; Location for configuration and certificate files
+  WriteRegStr HKCU "Software\${APPNAME}" "DataDirectory" "$CFGINSTDIR"
+  WriteRegStr HKCU "Software\${APPNAME}" "ConfigDirectory" "$CFGINSTDIR"
+  ;
+  ; Location of the www root
+  WriteRegStr HKCU "Software\${APPNAME}" "WebDirectory" "$INSTDIR\www"
+  ;
+  ; Create the Start Menu shortcuts
+  createDirectory "$SMPROGRAMS\${APPNAME}"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\Uninstall ${APPNAME}.lnk" "$INSTDIR\uninstall.exe"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\README.1ST.lnk" "notepad.exe" "$INSTDIR\README.1ST.txt"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\README.lnk" "notepad.exe" "$INSTDIR\README.txt"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\API.lnk" "notepad.exe" "$INSTDIR\API.txt"
+  createShortCut  "$SMPROGRAMS\${APPNAME}\SSL Certificates Directory.lnk" "file:///$CFGINSTDIR\ssl\certs"
+  ;
+  ;
+  ; Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+  ;
+  ; Registry information for add/remove programs
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME} - ${DESCRIPTION}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$INSTDIR\uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayIcon" "$INSTDIR\www\favicon.ico"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "Publisher" "${COMPANYNAME}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "HelpLink" "${HELPURL}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "URLUpdateInfo" "${UPDATEURL}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "URLInfoAbout" "${ABOUTURL}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayVersion" "${VERSION}"
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "VersionMajor" "${VERSIONMAJOR}"
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "VersionMinor" "${VERSIONMINOR}"
+  ;
+  ; There is no option for modifying or repairing the install
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "NoRepair" 1
+  ;
+  ; Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
+  ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+  IntFmt $0 "0x%08X" $0
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "EstimatedSize" "$0"
+SectionEnd
+
+;--------------------------------
+;Descriptions
+
+;Language strings
+LangString DESC_SectionOpenGalaxy ${LANG_ENGLISH} "Select this option to install the openGalaxy server application."
+LangString DESC_SectionOpenGalaxyClient ${LANG_ENGLISH} "Select this option to install the openGalaxy client application."
+LangString DESC_SectionOpenGalaxyCA ${LANG_ENGLISH} "Select this option to install openGalaxyCA.$\n$\nopenGalaxyCA is used to generate and manage the SSL certificates used by openGalaxy."
+LangString DESC_SectionDesktop ${LANG_ENGLISH} "Select this option to place a shortcut on the desktop."
+LangString DESC_SectionGtkRuntime ${LANG_ENGLISH} "GTK+ runtime libraries."
+LangString DESC_SectionGtkAdwaita ${LANG_ENGLISH} "Adwaita theme for GTK+."
+LangString DESC_SectionAlwaysInstalled ${LANG_ENGLISH} "Uninstall scripts."
+
+;Assign language strings to sections
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionOpenGalaxy} $(DESC_SectionOpenGalaxy)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionOpenGalaxyClient} $(DESC_SectionOpenGalaxyClient)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionOpenGalaxyCA} $(DESC_SectionOpenGalaxyCA)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionDesktop} $(DESC_SectionDesktop)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGtkRuntime} $(DESC_SectionGtkRuntime)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionGtkAdwaita} $(DESC_SectionGtkAdwaita)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SectionAlwaysInstalled} $(DESC_SectionAlwaysInstalled)
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+;--------------------------------
+;Uninstaller Section
+
+Section "Uninstall"
+  ; Remove desktop icon
+  delete "$DESKTOP\${APPNAME}.lnk"
+  ;
+  ; Remove Start Menu launcher
+  delete "$SMPROGRAMS\${APPNAME}\openGalaxy Certificate Manager.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\openGalaxy (Client).lnk"
+  delete "$SMPROGRAMS\${APPNAME}\openGalaxy (Server).lnk"
+  delete "$SMPROGRAMS\${APPNAME}\README.1ST.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\README.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\API.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\README.MySQL.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\changelog.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\COPYING.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\Configuration editor.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\SSL Certificates Directory.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\Uninstall ${APPNAME}.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\openGalaxy - Server Manual.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\galaxy.conf - Manual.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\openGalaxy - Client Manual.lnk"
+  delete "$SMPROGRAMS\${APPNAME}\openGalaxy - Certificate Manager Manual.lnk"
+  rmDir "$SMPROGRAMS\${APPNAME}"
+  ;
+  ; Documentation
+  delete $INSTDIR\README.1ST.txt
+  delete $INSTDIR\README.txt
+  delete $INSTDIR\README.MySQL.txt
+  delete $INSTDIR\changelog.txt
+  delete $INSTDIR\COPYING.txt
+  delete $INSTDIR\API.TXT
+  delete $INSTDIR\galaxy.conf.pdf
+  delete $INSTDIR\opengalaxy.pdf
+  delete "$INSTDIR\openGalaxy Certificate Manager.pdf"
+  delete $INSTDIR\opengalaxy-client.pdf
+  ;
+  ; openGalaxy executable
+  delete $BINDIR\opengalaxy.exe
+  ;
+  ; openGalaxyCA executables
+  delete $BINDIR\opengalaxy-client.exe
+  delete $BINDIR\opengalaxy-ca.exe
+  delete $BINDIR\openssl.exe
+  delete $BINDIR\*.dll
+  ;
+  ; www root
+  delete $INSTDIR\www\external\jquery-ui\images\*
+  delete $INSTDIR\www\external\jquery-ui\*
+  delete $INSTDIR\www\external\jquery\*
+  delete $INSTDIR\www\external\*
+  delete $INSTDIR\www\*
+  ;
+  ; Delete the the openGalaxyCA\share directory
+  delete $INSTDIR\share\icons\Adwaita\16x16\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\16x16\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\actions
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\apps
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\categories
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\devices
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\places
+  rmDir $INSTDIR\share\icons\Adwaita\16x16\status
+  rmDir $INSTDIR\share\icons\Adwaita\16x16
+  delete $INSTDIR\share\icons\Adwaita\22x22\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\22x22\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\actions
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\apps
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\categories
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\devices
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\places
+  rmDir $INSTDIR\share\icons\Adwaita\22x22\status
+  rmDir $INSTDIR\share\icons\Adwaita\22x22
+  delete $INSTDIR\share\icons\Adwaita\24x24\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\24x24\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\actions
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\apps
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\categories
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\devices
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\places
+  rmDir $INSTDIR\share\icons\Adwaita\24x24\status
+  rmDir $INSTDIR\share\icons\Adwaita\24x24
+  delete $INSTDIR\share\icons\Adwaita\256x256\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\256x256\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\actions
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\apps
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\categories
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\devices
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\places
+  rmDir $INSTDIR\share\icons\Adwaita\256x256\status
+  rmDir $INSTDIR\share\icons\Adwaita\256x256
+  delete $INSTDIR\share\icons\Adwaita\96x96\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\96x96\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\actions
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\apps
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\categories
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\devices
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\places
+  rmDir $INSTDIR\share\icons\Adwaita\96x96\status
+  rmDir $INSTDIR\share\icons\Adwaita\96x96
+  delete $INSTDIR\share\icons\Adwaita\64x64\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\64x64\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\actions
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\apps
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\categories
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\devices
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\places
+  rmDir $INSTDIR\share\icons\Adwaita\64x64\status
+  rmDir $INSTDIR\share\icons\Adwaita\64x64
+  delete $INSTDIR\share\icons\Adwaita\32x32\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\32x32\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\actions
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\apps
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\categories
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\devices
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\places
+  rmDir $INSTDIR\share\icons\Adwaita\32x32\status
+  rmDir $INSTDIR\share\icons\Adwaita\32x32
+  delete $INSTDIR\share\icons\Adwaita\48x48\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\48x48\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\actions
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\apps
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\categories
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\devices
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\places
+  rmDir $INSTDIR\share\icons\Adwaita\48x48\status
+  rmDir $INSTDIR\share\icons\Adwaita\48x48
+  delete $INSTDIR\share\icons\Adwaita\8x8\actions\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\apps\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\categories\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\devices\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\emblems\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\emotes\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\mimetypes\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\places\*.png
+  delete $INSTDIR\share\icons\Adwaita\8x8\status\*.png
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\actions
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\apps
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\categories
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\devices
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\places
+  rmDir $INSTDIR\share\icons\Adwaita\8x8\status
+  rmDir $INSTDIR\share\icons\Adwaita\8x8
+  delete $INSTDIR\share\icons\Adwaita\cursors\*
+  rmDir $INSTDIR\share\icons\Adwaita\cursors
+  delete $INSTDIR\share\icons\Adwaita\scalable\actions\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\apps\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\categories\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\devices\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\emblems\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\emotes\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\mimetypes\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\places\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable\status\*.svg
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\actions
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\apps
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\categories
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\devices
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\places
+  rmDir $INSTDIR\share\icons\Adwaita\scalable\status
+  rmDir $INSTDIR\share\icons\Adwaita\scalable
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\actions\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\apps\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\categories\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\devices\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\emblems\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\emotes\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\mimetypes\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\places\*.svg
+  delete $INSTDIR\share\icons\Adwaita\scalable-up-to-32\status\*.svg
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\actions
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\apps
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\categories
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\devices
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\emblems
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\emotes
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\mimetypes
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\places
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32\status
+  rmDir $INSTDIR\share\icons\Adwaita\scalable-up-to-32
+  delete $INSTDIR\share\icons\Adwaita\icon-theme.cache
+  delete $INSTDIR\share\icons\Adwaita\index.theme
+  rmDir $INSTDIR\share\icons\Adwaita
+  rmDir $INSTDIR\share\icons
+  rmDir $INSTDIR\share
+  ;
+  ; Try to remove the install directory tree - this will only happen if each directory it is empty
+  rmDir $INSTDIR\www\external\jquery-ui\images
+  rmDir $INSTDIR\www\external\jquery-ui
+  rmDir $INSTDIR\www\external\jquery
+  rmDir $INSTDIR\www\external
+  rmDir $INSTDIR\www
+  rmDir $BINDIR
+
+  ; Delete uninstaller and installation directory as the last action
+  Delete "$INSTDIR\Uninstall.exe"
+  RMDir "$INSTDIR"
+
+  # Delete the openGalaxy registry keys
+  DeleteRegKey HKCU "Software\${APPNAME}"
+
+  # Remove uninstaller information from the registry
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
+SectionEnd
+
+;--------------------------------
+;Functions & macros
+
+!macro VerifyUserIsAdmin
+UserInfo::GetAccountType
+pop $0
+${If} $0 != "admin" ;Require admin rights on NT4+
+  messageBox mb_iconstop "Administrator rights required!"
+  setErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
+  quit
+${EndIf}
+!macroend
+ 
+function .onInit
+  ; Set default installation path
+  ${If} $INSTDIR == "" ; Don't override setup.exe /D=c:\custom\dir
+    ${If} ${ARCH} == "x64"
+      StrCpy $INSTDIR "$ProgramFiles64\${APPNAME}"
+    ${Else}
+      StrCpy $INSTDIR "$ProgramFiles32\${APPNAME}"
+    ${Endif}
+  ${Endif}
+ 
+  ReadRegStr $R0 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" \
+  "UninstallString"
+  StrCmp $R0 "" done
+ 
+  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+  "${APPNAME} is already installed. $\n$\nClick `OK` to remove the \
+  previous version or$\n `Cancel` to cancel this upgrade." \
+  IDOK uninst
+  Abort
+ 
+;Run the uninstaller
+uninst:
+  ClearErrors
+  ;Exec $INSTDIR\Uninstall.exe
+  Exec $R0
+
+done:
+  SetShellVarContext current
+  !insertmacro VerifyUserIsAdmin
+
+  ; seed the value for the data directory with the currect users MyDocument folder
+  StrCpy $CFGINSTDIR "$DOCUMENTS\${APPNAME}\"
+
+  ; also set the variable that holds the location of the GtkApplications directory
+  StrCpy $BINDIR "$INSTDIR\bin"
+
+  ; gray-out the Gtk runtime and Adwaita sections
+  SectionGetFlags ${SectionGtkRuntime} $0
+  SectionGetFlags ${SectionGtkAdwaita} $1
+  IntOp $0 $0 | ${SF_RO}
+  IntOp $1 $1 | ${SF_RO}
+  SectionSetFlags ${SectionGtkRuntime} $0
+  SectionSetFlags ${SectionGtkAdwaita} $1
+functionEnd
+
+
+; If an application that requires GTK+ is selected
+;  then also select the sections that install GTK.
+; If there is no selected section that requires GTK
+;  then unselect the GTK runtime and theme.
+function .onSelChange
+  SectionGetFlags ${SectionOpenGalaxyClient} $0
+  SectionGetFlags ${SectionOpenGalaxyCA} $1
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntOp $1 $1 & ${SF_SELECTED}
+  StrCmp $0 ${SF_SELECTED} select_gtk 0
+  StrCmp $1 ${SF_SELECTED} select_gtk 0
+  ; Unselect GTK+ and Adwaita
+  SectionGetFlags ${SectionGtkRuntime} $0
+  SectionGetFlags ${SectionGtkAdwaita} $1
+  IntOp $0 $0 | ${SF_SELECTED}
+  IntOp $0 $0 ^ ${SF_SELECTED}
+  IntOp $1 $1 | ${SF_SELECTED}
+  IntOp $1 $1 ^ ${SF_SELECTED}
+  SectionSetFlags ${SectionGtkRuntime} $0
+  SectionSetFlags ${SectionGtkAdwaita} $1
+  goto done
+select_gtk:
+  ; Select GTK+ and Adwaita
+  SectionGetFlags ${SectionGtkRuntime} $0
+  SectionGetFlags ${SectionGtkAdwaita} $1
+  IntOp $0 $0 | ${SF_SELECTED}
+  IntOp $1 $1 | ${SF_SELECTED}
+  SectionSetFlags ${SectionGtkRuntime} $0
+  SectionSetFlags ${SectionGtkAdwaita} $1
+done:
+functionEnd
+
+
+function un.onInit
+  SetShellVarContext current
+  !insertmacro VerifyUserIsAdmin
+  StrCpy $BINDIR "$INSTDIR\bin"
+functionEnd
+
+

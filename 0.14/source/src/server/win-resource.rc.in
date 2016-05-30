@@ -1,0 +1,27 @@
+1974 ICON "@srcdir@/../www/favicon.ico" 
+
+1 VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080904E4"
+    BEGIN
+      VALUE "CompanyName", "Alexander Bruines"
+      VALUE "FileDescription", "SIA receiver for Galaxy security control panels"
+      VALUE "FileVersion", "@PACKAGE_VERSION@"
+      VALUE "InternalName", "openGalaxy"
+      VALUE "LegalCopyright", "Alexander Bruines, released under the GNU General Public License v2"
+      VALUE "OriginalFilename", "openGalaxy.exe"
+      VALUE "ProductName", "openGalaxy"
+      VALUE "ProductVersion", "@PACKAGE_VERSION@"
+    END
+  END
+
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x809, 1252
+  END
+END
+

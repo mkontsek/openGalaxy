@@ -1,0 +1,292 @@
+#!/bin/bash
+
+#  This file is part of openGalaxy.
+#
+#  opengalaxy - a SIA receiver for Galaxy security control panels.
+#  Copyright (C) 2015, Alexander Bruines <alexander.bruines@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License version 2 as
+#  as published by the Free Software Foundation, or (at your option)
+#  any later version.
+#
+#  In addition, as a special exception, the author of this program
+#  gives permission to link the code of its release with the OpenSSL
+#  project's "OpenSSL" library (or with modified versions of it that
+#  use the same license as the "OpenSSL" library), and distribute the
+#  linked executables. You must obey the GNU General Public License
+#  in all respects for all of the code used other than "OpenSSL".
+#  If you modify this file, you may extend this exception to your
+#  version of the file, but you are not obligated to do so.
+#  If you do not wish to do so, delete this exception statement
+#  from your version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+# This script can be used to build Debian packages for openGalaxy.
+# It will download and install a clean chroot environment and builds
+# the openGalaxy packages in that chroot.
+#
+# To use it, execute the command:
+#
+#   build-debs debian stable amd64 opengalaxy-0.13.tar.xz
+#  OR
+#   build-debs raspbian jessie armhf opengalaxy-0.13.tar.xz
+#  OR
+#   build-debs ubuntu testing i386 opengalaxy-0.13.tar.xz
+#  OR
+#   ...
+#
+# Notes:
+#
+#  The user running this script must have acces to sudo
+#
+#  If any of the keyrings should expire, then put the
+#   updated .deb names in the variables below
+#
+
+RASPBIAN_MIRROR="http://mirrordirector.raspbian.org/raspbian/"
+RASPBIAN_KEYRING="raspbian-archive-keyring_20120528.2_all.deb"
+
+DEBIAN_MIRROR="http://httpredir.debian.org/debian/"
+DEBIAN_KEYRING="debian-archive-keyring_2014.3_all.deb"
+
+UBUNTU_MIRROR="http://nl.archive.ubuntu.com/ubuntu/"
+UBUNTU_KEYRING="ubuntu-keyring_2012.05.19_all.deb"
+
+function on_error {
+ echo "Caught error, aborting"
+ exit
+}
+
+function on_exit {
+ echo "Have a nice day!"
+}
+
+trap on_error ERR
+trap on_exit EXIT
+
+function help {
+ cat <<EOF
+#
+# Run this script as:
+#   $(basename $0) <os> <distro> <arch> <source>
+#
+# Where:
+#   os      =  debian, ubuntu or raspbian
+#   distro  =  stable, testing, sid, jessie, ...
+#   arch    =  Any value returned by 'dpkg-architecture -qDEB_HOST_ARCH'
+#                (like: amd64 i386 armhf)
+#   source  =  The zipped upstream source package
+#                ( name-version.tar.* )
+#
+# Note:
+#   When cross-compiling, 'arch' must be supported by qemu.
+#
+# Example:
+#   $(basename $0) raspbian jessie armhf opengalaxy-0.12.tar.xz
+#
+EOF
+}
+
+[ "$#" -ne 4 ] && {
+ help
+ echo "Wrong number of arguments!"
+ exit
+}
+
+OS="$1"
+DIST="$2"
+ARCH="$3"
+SOURCE="$4"
+
+# Get the parameters we need from $SOURCE
+#
+# Split the basename into name_and_version and upstream_suffix and
+# then split name_and_version into upstream_name and upstream_version
+#
+upstream_basename="$(basename $SOURCE)"
+upstream_suffix=".${upstream_basename##*.}"
+name_and_version="${upstream_basename/$upstream_suffix/}"
+[ "x$upstream_suffix" = "x.tar" ] || {
+ [ "x${name_and_version##*.}" = "xtar" ] && {
+  name_and_version="${name_and_version/.tar/}"
+  upstream_suffix=".tar$upstream_suffix"
+ } || {
+  help
+  echo "Upstream source must be a (compressed) tar archive!"
+  false
+ }
+}
+upstream_name="${name_and_version%-*}"
+upstream_version="${name_and_version/${upstream_name}-/}"
+
+# The 'original' source package
+package_source="./${upstream_name}_${upstream_version}.orig${upstream_suffix}"
+
+# test for, and install qemu-user-static when cross-compiling
+[ "`dpkg --print-architecture`" != "$arch" ] && {
+ # test for qemu-user-static package
+ dpkg -l qemu-user-static >/dev/null 2>&1 || {
+  echo "Installing package: qemu-user-static"
+  sudo apt-get -y -qq install qemu-user-static
+ }
+}
+
+# test for, and install the pbuilder package
+dpkg -l pbuilder >/dev/null 2>&1 || {
+ echo "Installing package: pbuilder"
+ sudo apt-get -y -qq install pbuilder autotools-dev autoconf automake libtool
+}
+dpkg -l autotools-dev >/dev/null 2>&1 || {
+ echo "Installing package: autotools-dev"
+ sudo apt-get -y -qq install autotools-dev
+}
+dpkg -l autoconf >/dev/null 2>&1 || {
+ echo "Installing package: autoconf"
+ sudo apt-get -y -qq install autoconf
+}
+dpkg -l automake >/dev/null 2>&1 || {
+ echo "Installing package: automake"
+ sudo apt-get -y -qq install automake
+}
+dpkg -l libtool >/dev/null 2>&1 || {
+ echo "Installing package: libtool"
+ sudo apt-get -y -qq install libtool
+}
+
+# test for and install archive keyring and write a pbuilder configuration file
+cat <<EOF >pbuilderrc
+#!/bin/sh
+set -e
+OS="$OS"
+DIST="$DIST"
+ARCH="$ARCH"
+EOF
+case "$OS" in
+ debian)
+  dpkg -l debian-archive-keyring >/dev/null 2>&1 || {
+   echo "Installing package: debian-archive-keyring"
+   wget $DEBIAN_MIRROR/pool/main/d/debian-archive-keyring/$DEBIAN_KEYRING
+   sudo dpkg -i $DEBIAN_KEYRING
+  }
+  cat <<EOF >>pbuilderrc
+KEYRING="/usr/share/keyrings/debian-archive-keyring.gpg"
+MIRROR="$DEBIAN_MIRROR"
+COMPONENTS="main contrib non-free"
+EOF
+  ;;
+ ubuntu)
+  dpkg -l ubuntu-archive-keyring >/dev/null 2>&1 || {
+   echo "Installing package: ubuntu-archive-keyring"
+   wget $UBUNTU_MIRROR/pool/main/u/ubuntu-keyring/$UBUNTU_KEYRING
+   sudo dpkg -i $UBUNTU_KEYRING
+  }
+  cat <<EOF >>pbuilderrc
+KEYRING="/usr/share/keyrings/ubuntu-archive-keyring.gpg"
+MIRROR="$UBUNTU_MIRROR"
+COMPONENTS="main restricted universe multiverse"
+EOF
+  ;;
+ raspbian)
+  dpkg -l raspbian-archive-keyring >/dev/null 2>&1 || {
+   echo "Installing package: raspbian-archive-keyring"
+   wget $RASPBIAN_MIRROR/pool/main/r/raspbian-archive-keyring/$RASPBIAN_KEYRING
+   sudo dpkg -i $RASPBIAN_KEYRING
+  }
+  cat <<EOF >>pbuilderrc
+KEYRING="/usr/share/keyrings/raspbian-archive-keyring.gpg"
+MIRROR="$RASPBIAN_MIRROR"
+COMPONENTS="main contrib non-free"
+EOF
+  ;;
+ *)
+  help
+  echo "Unknown operating system ($OS)!"
+  false
+  ;;
+esac
+cat <<'EOF' >>pbuilderrc
+NAME="$OS-$DIST-$ARCH"
+DEBOOTSTRAPOPTS=("${DEBOOTSTRAPOPTS[@]}" "--keyring=$KEYRING" "--arch=$ARCH")
+BASETGZ="/var/cache/pbuilder/$NAME-base.tgz"
+DISTRIBUTION="$DIST"
+BUILDRESULT="/var/cache/pbuilder/$NAME/result/"
+APTCACHE="/var/cache/pbuilder/$NAME/aptcache/"
+BUILDPLACE="/var/cache/pbuilder/build"
+HOOKDIR="/var/cache/pbuilder/hook.d/"
+USENETWORK=yes
+EOF
+source ./pbuilderrc
+
+[ ! -f "$SOURCE" ] && {
+ cat <<EOF
+#
+# Cannot find upstream source archive '$SOURCE'
+#
+EOF
+ false
+}
+
+[ -f $package_source ] && {
+ cat <<EOF
+#
+# $package_source allready exists, abort!
+#
+EOF
+ false
+}
+
+[ -d "${upstream_name}-${upstream_version}" ] && {
+ cat <<EOF
+#
+# Directory ${upstream_name}-${upstream_version} allready exists, abort!
+#
+EOF
+ false
+}
+
+# copy the upstream source package to the debian source package
+cp -v $SOURCE $package_source
+
+# Build the base tarball if needed
+[ ! -f /var/cache/pbuilder/$NAME-base.tgz ] && {
+ cat <<EOF
+#
+# Please wait while a pbuilder base tarball is created...
+#
+EOF
+ # Make sure we only use qemu when not compiling for the hosts architecture
+ if [ "x$ARCH" = "x$(dpkg --print-architecture)" ]; then
+  sudo pbuilder --create --keyring $KEYRING --mirror $MIRROR --configfile `pwd`/pbuilderrc
+ else
+  sudo pbuilder --create --keyring $KEYRING --mirror $MIRROR --debootstrap qemu-debootstrap --configfile `pwd`/pbuilderrc
+ fi
+}
+
+# unpack the source package
+tar xf ./$package_source
+
+# build the package (in the chroot)
+cd "${upstream_name}-${upstream_version}"
+pdebuild --configfile `pwd`/../pbuilderrc
+cd ..
+
+# remove the source tree after a successfull build
+rm -fR "${upstream_name}-${upstream_version}"
+
+cat <<EOF
+#
+# The .deb files are in /var/cache/pbuilder/$NAME/result/...
+#
+EOF
+
+

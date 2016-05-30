@@ -1,0 +1,4 @@
+?package(opengalaxy-server):\
+  needs="text"\
+  section="Applications/System/Security"\
+  title="openGalaxy (server)" command="/usr/bin/opengalaxy"

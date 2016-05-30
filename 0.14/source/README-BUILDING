@@ -1,0 +1,93 @@
+This document describes how to compile openGalaxy on Linux.
+-----------------------------------------------------------
+
+Note: For Windows compilation instruction see the file README-MSYS2.TXT
+      For the Raspberry Pi see README.RaspberryPi
+
+
+Prerequisites for compiling openGalaxy:
+---------------------------------------
+
+ - libmysqlclient is needed only if the MySQL output plug-in is used.
+   (http://dev.mysql.com/downloads/connector/c/)
+
+   I build my copy with the following command (from the source directory):
+
+   cmake . && make && sudo make install
+
+   Alternativly you could install the libmysqlclient provided by your
+   Linux distribution. On Debian GNU/Linux this can be done with:
+
+   sudo apt-get install libmysqlclient-dev
+
+
+ - The opengalaxy-ca program uses the OpenSSL commandline utility.
+   On Linux, it is not installed from the source package openGalaxy build,
+   instead opengalaxy-ca relies on the openssl executables installed by
+   your distro.
+   On Windows, the OpenSSL executable is distrubuted together with openGalaxy.
+
+ - opengalaxy-ca and opengalaxy-client require GTK+ (3.x), the build scripts
+   assume the GTK+ libraries and its dependencies are available in the
+   build environment.
+
+ - The make process will download libwebsockets and openssl (if so selected)
+   from Github. If you have no internet connection or want to use a specific
+   version of either library, then you can place their sourcecode the
+   'libwebsockets' and/or 'openssl' directories inside the build directory
+   before running make.
+
+Note:
+The code of openGalaxy is multithreaded and uses the POSIX Threads library
+(available by default on most modern Linux distributions).
+
+Note:
+These dependencies are fullfilled automaticly when building* or installing
+Debian packages (* using pbuilder).
+
+
+Compilation of openGalaxy:
+--------------------------
+
+  On Debian GNU/Linux:
+ ----------------------
+
+Execute these commands:
+
+tar xf opengalaxy-0.12.tar.xz
+cd openagalaxy-0.12
+mkdir build && cd build
+
+Followed by (debian):
+../build-debs debian jessie amd64 ../../opengalaxy-0.12.tar.xz
+
+Or (ubuntu)
+../build-debs ubuntu trusty amd64 ../../opengalaxy-0.12.tar.xz
+
+
+
+  On other Linux:
+ -----------------
+
+tar xf opengalaxy-0.12.tar.xz
+cd openagalaxy-0.12
+mkdir build && cd build
+
+followed by:
+
+../configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var [--enable-debug] [other options to configure script]
+
+And if there are no errors:
+
+make && sudo make install
+
+
+Note:
+ This also works on Debian/Ubuntu if you don't want to buidl an entire package.
+
+Note:
+ The configure script has several options that may assist in compiling
+ openGalaxy on your target. You can list them with the command:
+
+ ../configure --help
+

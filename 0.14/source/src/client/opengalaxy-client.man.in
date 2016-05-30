@@ -1,0 +1,28 @@
+.TH OPENGALAXY-CLIENT 1 2015-11-15
+.SH NAME
+opengalaxy-client \- Graphical client application for openGalaxy.
+.SH SYNOPSIS
+.B opengalaxy-client
+.SH DESCRIPTION
+.B opengalaxy-client
+Connects to the openGalaxy webinterface, receives decoded SIA messages and is able to perform various tasks on a connected the Galaxy security control panel.
+.PP
+.B Any user may execute opengalaxy-client, they do NOT need to be a member of group 'staff' (Linux only).
+.SH NOTES
+.B This client application is very experimental, do not use it! Connect to the webinterface with your webbrowser instead.
+.PP
+When you try to arm an area that is not ready; the panel will try to arm but will show the open zones on the keypads!
+.PP
+Meanwhile, if you execute another command, it will be accepted by the panel but
+.B no other SIA messages will be sent until the area that was not ready to arm either aborts or arms!!
+.br
+To continue arming the zone(s) must close or be overruled by pressing enter on a keypad.
+To abort arming select the area again and press the abort button.
+.PP
+To avoid displaying the open zone(s) on the keypads and just arm the area, you should use the 'force' button to arm.
+This will immediately overrule any open zones.
+.SH "SEE ALSO"
+.BR galaxy.conf (5),
+.BR opengalaxy (8),
+.BR opengalaxy-ca (8),
+

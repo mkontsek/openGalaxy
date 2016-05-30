@@ -1,0 +1,26 @@
+#!/bin/sh
+# postinst script for opengalaxy-data
+
+set -e
+
+case "$1" in
+    configure)
+
+    # Set correct owner, group and permission for the WWW directory
+    chown root:staff /usr/share/galaxy/www
+    chmod u-s,u+rwx,g+rx,g-sw,o+rx,o-w /usr/share/galaxy/www
+
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

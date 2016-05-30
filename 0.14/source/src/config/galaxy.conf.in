@@ -1,0 +1,146 @@
+#
+# openGalaxy (version @PACKAGE_VERSION@) configuration file
+#
+
+# How much to log.
+# Possible values
+#
+#  0   Log nothing.
+#  1   Log errors and warnings only.
+#  2   Log informational messages, errors and warnings.
+#  3   Log debugging and informational messages, errors and warnings.
+#
+#  The default is @config_log_level@
+LOG-LEVEL = @config_log_level@
+
+# Remote code for the connected Galaxy panel
+# default is 543210
+REMOTE-CODE = 543210
+
+# Serial port to use
+# The default is @config_serial_port_name@
+#
+SERIALPORT = @config_serial_port_name@
+
+# Baudrate to use
+# Possible values:
+# 300, 600, 1200, 2400, 4800,
+# 9600, 19200, 38400 or 57600
+# The default is @config_baudrate@
+#
+BAUDRATE = @config_baudrate@
+
+# Position of dipswitch 8 (Galaxy G3/Dimension)
+#
+# With dipswitch 8 on the Galaxy panel in the ON position
+# the second onboard RIO (101) is moved to virtual
+# communication line 0 and becomes RIO 001.
+#
+# on or off (default is @config_dip8@)
+#
+DIP8 = @config_dip8@
+
+# Use alternative control blocks?
+#
+# This is for use with very old RS232 ( < V0.06 firmware ) modules.
+# Early models of the RS232 module send/expect '8' and '9' blocks as
+# literal value 8/9 instead of ASCII characters.
+#
+# Valid values:
+# yes or no (default = @config_alt_control_blocks@)
+#
+ALT-CONTROL-BLOCKS = @config_alt_control_blocks@
+
+# The amount of time (in minutes) an IP address should be
+# blacklisted for after receiving an invalid client certificate.
+#
+# The default is @config_blacklist_timeout@ minutes
+#
+BLACKLIST-TIMEOUT-MINUTES = @config_blacklist_timeout@
+
+# The amount of time (in seconds) a client must be inactive
+# in order to trigger an automatic logoff.
+#
+# The default is @config_session_timeout@ seconds
+#
+SESSION-TIMEOUT-SECONDS = @config_session_timeout@
+
+
+#
+# Output plugin configuration:
+#
+# Set any of the USE-xxxx-PLUGIN options to 'yes' or 'no'
+# to enable or disable that output plugin.
+#
+
+
+# Textfile output plugin: Sends SIA messages to a textfile
+#
+# Options:
+#
+# TEXT-FILE is the path to the file that the SIA messages are sent to.
+# It's default value is '@config_file_textfile@' on Linux and
+# 'MyDocuments/galaxy/galaxy.log.txt' on Windows (if the default installation paths were used)
+#
+# The default value for USE-FILE-PLUGIN is @config_use_file_plugin@.
+#
+USE-FILE-PLUGIN = @config_use_file_plugin@
+#TEXT-FILE       = @config_file_textfile@
+
+
+# Email outout plugin: Sends SIA messages to an SMTP server (Linux only)
+#
+# Options:
+#
+# FROM-ADDRESS is the email adres used to send mail
+# FROM-NAME is the name displayed in the from header of your email client
+# EMAIL-RECIPIENTS is the list of email addresses (seperated by whitespace) passed to SSMTP
+# The default value for USE-EMAIL-PLUGIN is @config_use_email_plugin@.
+#
+USE-EMAIL-PLUGIN = @config_use_email_plugin@
+FROM-ADDRESS     = @config_email_from_address@
+FROM-NAME        = @config_email_from_name@
+EMAIL-RECIPIENTS = @config_email_recipients@
+
+
+# MySQL output plugin: Sends SIA messages to a MySQL database
+#
+# Options:
+#
+# MYSQL-SERVER is the IP address or hostname of the MySQL server to connect to.
+# MYSQL-USER is the username used to logon to the MySQL server.
+# MYSQL-PASSWORD is the password for the username.
+# MYSQL-DATABASE is the name of the database to connect to.
+#
+# The defaults are:
+#
+USE-MYSQL-PLUGIN = @config_use_mysql_plugin@
+MYSQL-SERVER     = @config_mysql_server@
+MYSQL-USER       = @config_mysql_user@
+MYSQL-PASSWORD   = @config_mysql_password@
+MYSQL-DATABASE   = @config_mysql_database@
+
+
+#
+# Server configuration settings
+#
+
+
+# The interface to bind the listen socket to
+# Possible values:
+#
+# The name of the interface eg. eth0
+#
+# The default is to leave this value empty
+# in order to bind to all interfaces.
+IFACE =
+
+# The port to use in HTTP (no SSL) mode.
+# The default value (if left empty) is 80 for Windows, 1500 for Linux.
+HTTP-PORT =
+
+# The port to use in HTTPS (with SSL) mode
+# The default value (if left empty) is 443 for Windows, 1500 for Linux.
+HTTPS-PORT =
+
+

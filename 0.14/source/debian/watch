@@ -1,0 +1,2 @@
+version=3
+http://sf.net/galaxy4linux/galaxy-(.+)\.tar\.(?:bz2|xz)

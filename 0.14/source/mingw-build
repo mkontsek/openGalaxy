@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+# Builds openGalaxy on MSYS2 + MingW64
+#
+# Use like this:
+# mkdir build && cd build
+# ../mingw-build ..
+#
+# When finished, you should end up with the
+#  installer executable in the build directory.
+#
+
+set -e
+
+source=$1
+flags=$2
+INSTDIR="`pwd`/bin"
+
+if [ "$source" == "" ]; then 
+ echo -e "\nSynopsis: $0 <source directory>\n"
+ exit 1
+fi
+
+
+#if [ -f Makefile ]; then
+# make distclean
+#fi
+
+rm -fR ${INSTDIR}
+
+
+${source}/configure \
+  --disable-debug \
+  --prefix=${INSTDIR} \
+  --bindir=${INSTDIR} \
+  --sysconfdir=${INSTDIR} \
+  --datadir=${INSTDIR} \
+  --datarootdir=${INSTDIR} \
+  --without-email-plugin \
+  ${flags} &&
+\
+make && \
+make install-strip
+

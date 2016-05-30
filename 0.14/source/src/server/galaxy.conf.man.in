@@ -1,0 +1,169 @@
+.TH GALAXY.CONF 5 2015-07-12
+.SH NAME
+galaxy.conf \- Configuration file for
+.B opengalaxy
+.SH DESCRIPTION
+.B opengalaxy
+reads various options from
+.B galaxy.conf
+when it starts.
+.PP
+.TP 12
+.B LOG\-LEVEL
+.br
+How much to log.
+.br
+.B 0
+\- Log nothing.
+.br
+.B 1
+\- Log errors and warnings only.
+.br
+.B 2
+\- Log informational messages, errors and warnings (the default).
+.br
+.B 3
+\- Log debugging and informational messages, errors and warnings.
+.TP 12
+.B REMOTE\-CODE
+.br
+The 'remote' code for the attached Galaxy security control panel. Modifying this code can only be done by using the Galaxy RS software suite (or Galaxy Gold software).
+The default is \fB543210\fR.
+.TP 12
+.B SERIALPORT
+.br
+The serial port to use.
+The default is \fB@config_serial_port_name@\fR.
+.TP 12
+.B BAUDRATE
+.br
+The baud rate to use on the serial port.
+.br
+Possible values are:
+300, 600, 1200, 2400, 4800, 9600, 19200, 38400 or 57600.
+The default is \fB@config_baudrate@\fR.
+.TP 12
+.B USE\-EMAIL\-PLUGIN
+.br
+Set to
+.B YES
+to enable sending decoded SIA message to an SMTP server.
+When set to Yes, 
+.B opengalaxy
+will use
+.br 
+.I @man_ssmtp_conf@
+.br
+as the configuration file used when it executes the
+.B ssmtp
+command to send emails.
+The default is
+.B NO.
+(This plugin is not useable under Windows.)
+.TP 12
+.B FROM\-ADDRESS
+.br
+This is the email address used to send emails.
+.br
+This option has no default value.
+.TP 12
+.B FROM\-NAME
+.br
+The name displayed in the from header.
+.br
+This option has no default value.
+.TP 12
+.B EMAIL\-RECIPIENTS
+.br
+The list of email addresses passed to
+.B ssmtp
+.br
+This option has no default value.
+.PP
+.TP 12
+.B USE\-MYSQL\-PLUGIN
+.br
+Set to
+.B YES
+to enable sending decoded SIA messages to a MySQL database.
+The default is
+.B NO
+.TP 12
+.B MYSQL\-SERVER
+.br
+The MySQL server to connect to.
+.br
+The default is
+.B localhost
+.TP 12
+.B MYSQL\-USER
+.br
+The username used to logon to the MySQL server.
+.br
+The default is
+.B Galaxy
+.TP 12
+.B MYSQL\-PASSWORD
+.br
+The password used to logon to the MySQL server.
+.br
+The default is
+.B topsecret
+.TP 12
+.B MYSQL\-DATABASE
+.br
+The name of the database to connect to.
+.br
+The default is
+.B Galaxy
+.TP 12
+.B DIP8
+.br
+Set this option to
+.B ON
+if the attached Galaxy panel has dipswitch 8 in the on position.
+Dipswitch 8 moves onboard RIO 101 to virtual communications line 0 and becomes RIO 001.
+The default is
+.B OFF
+.TP 12
+.B ALT\-CONTROL\-BLOCKS
+.br
+Set this option to
+.B Yes
+if connecting with a very old RS232 ( < V0.06 firmware ) module.
+.br
+Early models of the RS232 module send/expect '8' and '9' SIA blocks as literal value 8/9 instead of ASCII characters.
+The default is
+.B No
+.SH EXAMPLE
+Example
+.B ssmtp.conf
+file for use with the 
+.B email plugin
+:
+.PP
+root=
+.br
+AuthUser=Account-used-to-send-mail@gmail.com
+.br
+AuthPass=TopsecretPassword
+.br
+mailhub=smtp.gmail.com:465
+.br
+rewriteDomain=gmail.com
+.br
+hostname=gmail.com
+.br
+FromLineOverride=YES
+.br
+UseTLS=YES
+.SH FILES
+.I @man_galaxy_conf@
+.br
+.I @man_ssmtp_conf@
+.SH "SEE ALSO"
+.BR opengalaxy (8),
+.BR opengalaxy-client (1),
+.BR opengalaxy-ca (8),
+.BR ssmtp (8)
+

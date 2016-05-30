@@ -1,0 +1,25 @@
+From 5187de5aaaed0f659a8a2ef386ffb1be4a0ee05f Mon Sep 17 00:00:00 2001
+From: = <dummy@dummy.org>
+Date: Sun, 17 Apr 2016 01:08:00 +0200
+Subject: [PATCH] xxx
+
+---
+ lib/libwebsockets.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/libwebsockets.c b/lib/libwebsockets.c
+index fd396b3..d053b08 100644
+--- a/lib/libwebsockets.c
++++ b/lib/libwebsockets.c
+@@ -686,7 +686,7 @@ lws_get_peer_simple(struct lws *wsi, char *name, int namelen)
+ 		return NULL;
+ 	}
+ 
+-	return inet_ntop(af, q, name, namelen);
++	return lws_plat_inet_ntop(af, q, name, namelen);
+ #else
+ 	return NULL;
+ #endif
+-- 
+2.8.1
+

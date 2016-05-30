@@ -1,0 +1,15 @@
+GtkWindow {
+  font-family: "Sans";
+  font-size: 10px;
+}
+
+#textViewAbout {
+  font-family: "Sans";
+  font-size: 8px;
+}
+
+#textviewGNU {
+  font-family: "Monospace";
+  font-size: 8px;
+}
+

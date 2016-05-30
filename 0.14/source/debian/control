@@ -1,0 +1,99 @@
+Source: opengalaxy
+Section: misc
+Priority: optional
+Maintainer: Alexander Bruines <alexander.bruines@gmail.com>
+Build-Depends: debhelper (>= 9), autotools-dev, openssl, ca-certificates, xz-utils, libz-dev, autoconf, automake, libtool, git, libmysqlclient-dev, libgtk-3-dev, vim-common, cmake, libssl-dev
+Standards-Version: 3.9.6
+Homepage: http://sourceforge.net/projects/galaxy4linux
+
+Package: opengalaxy-common
+Architecture: all
+Depends: ${misc:Depends}, adwaita-icon-theme
+Recommends: opengalaxy-server, opengalaxy-data, opengalaxy-client, opengalaxy-certificates-manager
+Description: Common files needed by all other openGalaxy packages
+ openGalaxy is a software tool that listens on a serial port for incoming
+ SIA formatted alarm messages from a Galaxy security control panel.
+ These  messages are sent to a websocket interface and may optionally be stored
+ in a MySQL database and/or forwarded by email.
+ This software is written for use by trained security professionals, but
+ it could also be used by a layperson who wants to receive the exact same
+ messages that are normally send to a private emergency response company.
+ In addition to just listening for messages, openGalaxy can also be used to
+ (depending on the panels firmware version) arm and disarm areas,
+ omit zones and even to (re)set outputs.
+ .
+ This package contains files needed by all other openGalaxy packages.
+
+Package: opengalaxy-data
+Architecture: all
+Depends: ${misc:Depends}, opengalaxy-common (>= 0.14)
+Suggests: opengalaxy-server
+Description: Architecture independent data files for opengalaxy-server
+ openGalaxy is a software tool that listens on a serial port for incoming
+ SIA formatted alarm messages from a Galaxy security control panel.
+ These  messages are sent to a websocket interface and may optionally be stored
+ in a MySQL database and/or forwarded by email.
+ This software is written for use by trained security professionals, but
+ it could also be used by a layperson who wants to receive the exact same
+ messages that are normally send to a private emergency response company.
+ In addition to just listening for messages, openGalaxy can also be used to
+ (depending on the panels firmware version) arm and disarm areas,
+ omit zones and even to (re)set outputs.
+ .
+ This package contains architecture independent files needed by
+ opengalaxy-server.
+
+Package: opengalaxy-server
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, opengalaxy-common (>= 0.14), opengalaxy-data (>= 0.14), mysql-common, libmysqlclient18, menu, menu-xdg, libssl1.0.0
+Recommends: opengalaxy-client
+Suggests: opengalaxy-certificates-manager, ssmtp
+Description: SIA receiver for Galaxy security control panels
+ openGalaxy is a software tool that listens on a serial port for incoming
+ SIA formatted alarm messages from a Galaxy security control panel.
+ These  messages are sent to a websocket interface and may optionally be stored
+ in a MySQL database and/or forwarded by email.
+ This software is written for use by trained security professionals, but
+ it could also be used by a layperson who wants to receive the exact same
+ messages that are normally send to a private emergency response company.
+ In addition to just listening for messages, openGalaxy can also be used to
+ (depending on the panels firmware version) arm and disarm areas,
+ omit zones and even to (re)set outputs.
+ .
+ This package contains the openGalaxy server application.
+
+Package: opengalaxy-client
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, opengalaxy-common (>= 0.14), menu, menu-xdg, libssl1.0.0
+Suggests: opengalaxy-server
+Description: openGalaxy client application
+ openGalaxy is a software tool that listens on a serial port for incoming
+ SIA formatted alarm messages from a Galaxy security control panel.
+ These  messages are sent to a websocket interface and may optionally be stored
+ in a MySQL database and/or forwarded by email.
+ This software is written for use by trained security professionals, but
+ it could also be used by a layperson who wants to receive the exact same
+ messages that are normally send to a private emergency response company.
+ In addition to just listening for messages, openGalaxy can also be used to
+ (depending on the panels firmware version) arm and disarm areas,
+ omit zones and even to (re)set outputs.
+ .
+ This package contains the openGalaxy client application.
+
+Package: opengalaxy-certificates-manager
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, opengalaxy-common (>= 0.14), openssl, menu, menu-xdg
+Suggests: opengalaxy-server
+Description: Certificates Manager for openGalaxy
+ openGalaxy is a software tool that listens on a serial port for incoming
+ SIA formatted alarm messages from a Galaxy security control panel.
+ These  messages are sent to a websocket interface and may optionally be stored
+ in a MySQL database and/or forwarded by email.
+ This software is written for use by trained security professionals, but
+ it could also be used by a layperson who wants to receive the exact same
+ messages that are normally send to a private emergency response company.
+ In addition to just listening for messages, openGalaxy can also be used to
+ (depending on the panels firmware version) arm and disarm areas,
+ omit zones and even to (re)set outputs.
+ .
+ This package contains the openGalaxy Certificates Manager application.

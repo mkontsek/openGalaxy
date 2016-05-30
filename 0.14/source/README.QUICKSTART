@@ -1,0 +1,106 @@
+openGalaxy Quickstart Guide
+---------------------------
+
+NOTE: If you are upgrading from a pre 0.14 version, you may need to clear your
+      webbrowsers cache if the webinterface shows the old version number or
+      does not function properly.
+
+NOTE: If you are upgrading from a pre 0.14 version and have allready installed
+      SSL certificates. Then these need to be replaced with new ones.
+      This includes any certificates installed into your webbrowser.
+
+
+After installation you need to perform the following 3 steps to get
+things up and running:
+
+- step 0: For Linux only; Make sure that the user running the openGalaxy server
+          application is a member of groups 'staff' and 'dailout'.
+          A user can be added to a group with the command:
+
+          sudo adduser username groupname
+
+- Step 1: Create SSL certificates with the certificate manager and import
+          them into your webbrowser.
+
+          1) Create a 'self signed' certificate authority (CA certificate).
+          2) Create a server certificate.
+          3) Create at least one client certificate.
+          4) If nessesary, copy the certificates to other computers.
+
+          ( The PDF document named 'openGalaxy Certificate Manager.pdf'
+            explains how to create and install these certificates. )
+
+          Note: If you really want to, you can disable the use of client
+                certificates or disable SSL all together. To do this use
+                the --no-client-certs or --disable-ssl options with to the
+                opengalaxy server application. See the PDF document named
+                'openGalaxy Certificate Manager.pdf' for more information.
+
+
+- Step 2: Configure and connect the Galaxy panel to the computer:
+
+          - Configure the RS232 module of the Galaxy panel (menu 56):
+
+            - Protocol: SIA (or MultiPro on really old panels), level 3 (or 4).
+            - Triggers: Enable all triggers to receive all SIA messages.
+            - Baudrate: Any, but use 8N1.
+            - Account ID: Anything but not empty.
+
+          - Configure the Galaxy panel for 'Group mode'
+            (Dutch: blokken mode) in menu 63.
+            (Reboot the panel if you change this option. Menu 51 option 17.)
+
+          - Connect the serial port of your computer to the RS232 module.
+
+
+- Step 3: Configure openGalaxy settings.
+
+          - Open the file 'MyDocuments\openGalaxy\galaxy.conf' with notepad
+            and make sure it's settings are correct.
+
+            The PDF document named 'galaxy.conf.pdf' explains all the
+            options that can be set in the configuration file.
+
+          - Only the textfile output plugin is active by default,
+            it logs every SIA message to the file:
+
+            MyDocuments\openGalaxy\galaxy.log.txt
+
+
+You can now start the openGalaxy server application and connect to it with
+your webbrowser (or the openGalaxy client application).
+
+ - Start the openGalaxy server application and with your browser go to:
+   https://localhost
+   ( On Linux use: https://localhost:1500 )
+
+   Note: Use a http:// prefix if you disabled SSL.
+
+ - The 'opengalaxy-client' application can also connect to the server
+   application, but it is still a work in progress and has limited
+   fuctionality.
+
+
+NOTE: No matter what webbrowser you use, make sure you use the latest version.
+
+NOTE: When an attempt is made to logon to the openGalaxy server with an
+      invalid client certificate the following will happen:
+
+      1. Access is denied.
+      2. The originating IP address is blacklisted for 1 minute.
+      3. An illigal code alarm is generated on the connected Galaxy panel.
+
+NOTE:
+      openGalaxy is a primarily a UNIX/Linux application.
+      It can be compiled and used on Windows, but this will
+      inevitably have some limitations as it was not specifically
+      written for the operating system.
+
+      The biggest issue at this moment is that windows handles
+      file permissions differently than a UNIX/Linux machine would.
+
+      For openGalaxy this means that the (file) security of the SSL
+      certificates private keys is not handled by the opengalaxy-ca
+      application. You the user should take care that these files
+      are only accessible to the users you intent to have access.
+

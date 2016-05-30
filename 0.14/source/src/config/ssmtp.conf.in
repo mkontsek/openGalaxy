@@ -1,0 +1,14 @@
+#
+#  Configuration file for sSMTP sendmail program
+#  For openGalaxy version: @PACKAGE_VERSION@
+#
+
+root=
+AuthUser=Account-used-to-send-mail@gmail.com
+AuthPass=TopsecretPassword
+mailhub=smtp.gmail.com:465
+rewriteDomain=gmail.com
+hostname=gmail.com
+FromLineOverride=YES
+UseTLS=YES
+

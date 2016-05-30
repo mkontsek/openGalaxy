@@ -1,0 +1,40 @@
+This document describes how to compile openGalaxy on Raspbian.
+==============================================================
+
+
+Prerequisites for compiling openGalaxy:
+---------------------------------------
+
+The minimum version of Raspbian is 'jessie'
+
+Please be aware that the Raspberry Pi is not very powerfull,
+it has trouble running the graphical opengalaxy-client
+application at full speed. Perhaps it will run better once
+the application matures.
+
+The server application (opengalaxy) and the certificate
+manager (opengalaxy-ca) do not suffer from this.
+
+
+Cross-compiling openGalaxy on a Debian or Ubuntu computer:
+----------------------------------------------------------
+
+tar xf opengalaxy-0.12.tar.xz
+cd openagalaxy-0.12
+mkdir build && cd build
+../build-debs raspbian jessie armhf ../../opengalaxy-0.12.tar.xz
+
+Note: I only tested this with Debian, Ubuntu should work...
+
+
+Compiling openGalaxy (on the Raspberry Pi):
+-------------------------------------------
+
+sudo apt-get install devscripts
+mv opengalaxy-0.12.tar.xz opengalaxy_0.12.orig.tar.xz
+tar xf opengalaxy_0.12.orig.tar.xz
+cd opengalaxy-0.12
+debuild -us -uc
+
+Note that the build-debs method should also work.
+

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=@PACKAGE_VERSION@
+Name=openGalaxy
+GenericName=openGalaxy Server
+Icon=/usr/share/icons/Adwaita/48x48/apps/utilities-terminal.png
+Exec=/usr/bin/opengalaxy
+Categories=System;
+Terminal=true
+

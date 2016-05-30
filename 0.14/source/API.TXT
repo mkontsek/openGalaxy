@@ -1,0 +1,451 @@
+List of supported websocket commands:
+-------------------------------------
+
+The following is a list of commands that may be executed by using the
+'openGalaxy-websocket-protocol' websockets interface:
+
+To execute any of the commands described here, open the openGalaxy
+webinterface with a webbrowser. Then and open the 'Commandline' from the menu
+in the status window.
+
+You may now enter any command in the entry field and press enter.
+(See the end of this document for some examples.)
+
+Please note that not all Galaxy firmware revisions support every
+command listed here. Where known the needed firmware revision is listed
+but there may be many omissions...
+
+Whenever any of the commands require a 'blknum' or area id you may provide
+either a number (1-32) or the area id (A1..A8, B1..B8, C1..C8 or D1..D8).
+
+Whenever a command requires/allows a zone type to bespecified, it may be
+given as a number (1-99) or as a string that describes the type.
+The list is as follows:
+
+Type value     Type name               Also valid (Dutch descriptions and typo's)
+
+    1          FINAL                   LAATSTE
+    2          EXIT                    VOLGZONE
+    3          INTRUDER                INBRAAK
+    4          24-HOURS                24-UUR          24UUR
+    5          SECURITY
+    6          DUAL                    INBR.DUBB       INBR-DUBB
+    7          ENTRY                   IN/UIT          IN-UIT
+    8          PUSH-SET                PULS-AAN
+    9          KEYSWITCH               SLEUTEL
+    10         SECURE-FINAL            SEC/LTSTE       SEC-LTSTE
+    11         PART-FINAL              DL/LTSTE        DL-LTSTE
+    12         PART-ENTRY              DL/IN-UIT       DL-IN-UIT
+    13         PA                      PANIEK
+    14         PA-SILENT               PA-STIL
+    15         PA-DELAY                PA-VERT.        PA-VERT
+    16         PA-DELAY-SILENT         PA-VER/ST
+    17         LINK                    LINK-ING.       LINK-ING
+    18         SPARE                   RESERVE
+    19         FIRE                    BRAND
+    20         TAMPER                  SABOTAGE
+    21         BELL-TAMPER             SIR.-SAB.       SIR-SAB
+    22         BEAM-PAIR               BEAMPAAR
+    23         BATTERY-LOW             ACCU-LAAG
+    24         LINE-FAIL               LIJN-FOUT
+    25         AC-FAIL                 230VAC
+    26         LOG                     GEHEUGEN
+    27         REMOTE-ACCESS           RS-TOEG.        RS-TOEG
+    28         VIDEO
+    29         VIDEO-EXIT              VIDEOVOLG
+    30         INTRUDER-DELAY          INBR-VERT
+    31         LOG-DELAY               GEH-VERTR
+    32         SET-LOG                 GEH.-ING.       GEH-ING
+    33         CUSTOM-A
+    34         CUSTOM-B
+    35         EXITGUARD               BEWAKING
+    36         MASK                    AFDEK
+    37         URGENT
+    38         PA-UNSET                PA-UIT
+    39         KEYSWITCH-RESET         SLS-RESET
+    40         BELL-FAIL               SIR-FOUT
+    41         INTR-LOW                INBR-LAAG
+    42         INTR-HIGH               INBR-HOOG
+    43         PSU-FAULT               PSU-FOUT
+    44         (not used)
+    45         (not used)
+    46         (not used)
+    47         VIBRATION               KLUISDET.       KLUISDET
+    48         ATM-1
+    49         ATM-2
+    50         ATM-3
+    51         ATM-4
+    52         ALARM-EXTEND            ALARM-EXT
+    53..99     (not used)
+
+(Note that whitespaces in the names have been replaced with the '-' character.)
+
+
+All openGalaxy commands return a JSON formatted datablock on the websocket.
+If not otherwise specified the returned JSON object looks like:
+
+ { typeId:1, typeDesc:"%s", success:%u, command:"%s", replyText:"" }
+
+Where all possible values for 'typeId' are:
+ JSON_SIA_MESSAGE             = 0
+ JSON_STANDARD_REPLY          = 1
+ JSON_HELP_REPLY              = 2
+ JSON_AREA_ARMED_STATE        = 3
+ JSON_ALL_AREA_ARMED_STATE    = 4
+ JSON_AREA_ALARM_STATE        = 5
+ JSON_ALL_AREA_ALARM_STATE    = 6
+ JSON_AREA_READY_STATE        = 7
+ JSON_ALL_AREA_READY_STATE    = 8
+ JSON_ZONE_OMIT_STATE         = 9
+ JSON_ZONE_STATE              = 10
+ JSON_ALL_ZONE_READY_STATE    = 11
+ JSON_ALL_ZONE_ALARM_STATE    = 12
+ JSON_ALL_ZONE_OPEN_STATE     = 13
+ JSON_ALL_ZONE_TAMPER_STATE   = 14
+ JSON_ALL_ZONE_R_STATE        = 15
+ JSON_ALL_ZONE_OMIT_STATE     = 16
+ JSON_ALL_OUTPUT_STATE        = 17
+ JSON_POLL_REPLY              = 18
+ JSON_AUTHORIZATION_REQUIRED  = 19
+ JSON_AUTHENTICATION_ACCEPTED = 20
+
+And where:
+ %s is a string value.
+ %u is an unsigned integer value.
+
+The 'typeDesc' entry is a descriptive string for 'typeId'.
+Both 'typeId' and 'typeDesc' are avaiable in all returned JSON objects.
+
+'success' is non-zero when the 'command' associated with that object was
+successfull.
+
+
+-- AREA -------------------------------------------------------------------
+
+Syntax: AREA <blknum> <action>
+
+Where:
+
+blknum  =  Area number (1-32, A1-A8, B1-B8, C1-C8, D1-D8)
+           Special area 0 operates on all areas. The usage of this
+           special operator requires a panel firmware >= V1.20
+
+action  =  UNSET        Disarm an area
+           SET          Arm an area
+           PARTIAL      Partially arm an area
+           RESET        Reset an area
+           ABORT        Abort setting an area (panel >= V1.12)
+           FORCE        Force setting an area (panel >= V1.20)
+           STATE        Get the status of an area
+                         0 = unset
+                         1 = set
+                         2 = partial
+           READY        Area status with more states
+                         0 = unset
+                         1 = set
+                         2 = partial
+                         3 = Ready to arm
+                         4 = Time locked
+           ALARM        Get the alarm status of an area
+                         0 = Normal
+                         1 = Alarm
+                         2 = Reset required
+
+The commands UNSET, SET, PARTIAL, ABORT and FORCE return the
+default JSON object ('typeId' = 1).
+
+For other commands that operate on a single area:
+
+  { typeId:%u, typeDesc:"%s", areaState:%u }
+
+where 'typeId' is:
+  3 for STATE,
+  5 for ALARM and
+  7 for READY
+    
+For other commands that operate on a all areas:
+
+  { "typeId":%u, "typeDesc":"%s", "areaState":[32] }
+
+Where 'typeId' is:
+  4 for STATE,
+  6 for ALARM and
+  8 for READY
+
+And 'areaState' has 32 bytes with one area state each.
+
+On failure these functions return the default JSON object ('typeId' = 1).
+
+
+-- ZONE -------------------------------------------------------------------
+
+Syntax: ZONE <nr> <action>
+        ZONE <nr> PARAMETER <option> <flag>
+        ZONE <nr> SET <state> [<blknum> <type> [desc]]
+
+Where:
+
+nr      =  Zone (1001-4158) or zone-type (1-100)
+           For the PARAMETER action, 0 means all zones.
+
+action  =  OMIT         Omit a zone by number or type
+           UNOMIT       Un-omit a zone by number or type
+           ISOMIT       Get omit status of a zone (by number)
+                         0 = Not omitted
+                         1 = Omitted
+           STATE        Get the status of a zone (by number)
+                         0 = Tamper S/C
+                         1 = Low resistance
+                         2 = Zone closed
+                         3 = High resistance
+                         4 = Open
+                         5 = Tamper O/C
+                         6 = Masked
+                         7 = Tamper CV
+                         8 = Fault
+           PARAMETER    Sets zone parameters by number or type.
+           SET          Sets the state of a (virtual) zone by number.
+
+option  =  SOAK-TEST    Enable or disable soak-test for a zone
+                        by number or by type.
+           PART-SET     Enable or disable the part-set parameter
+                        for a zone by number or by type.
+
+flag    =  ON           Enable the option.
+           OFF          Disable the option.
+
+state   =  OPEN         Open a virtual zone.
+           CLOSED       Close a virtual zone.
+           OPEN-CLOSE   Open and then close a virtual zone.
+           TAMPER       Set a virtual zone to tamper state.
+
+blknum  =  Area number (1-32, A1-A8, B1-B8, C1-C8, D1-D8)
+
+type    =  Zone type (1-99)
+
+desc    =  Zone description (max. 16 characters)
+
+
+Notes:
+
+OMIT, UNOMIT and SET return the default JSON object ('typeId' = 1).
+
+ISOMIT returns a JSON object formatted like:
+
+  { "typeId":9, "typeDesc":"%s", "zoneNumber":%u, "omitState":%u }
+
+STATE returns a JSON object formatted like:
+
+  { "typeId":10, "typeDesc":"%s", "zoneNumber":%u, "zoneState":%u }
+
+
+WARNING:
+
+The SET and PARAMETER actions are the most powerfull commands that
+opengalaxy can execute as they can be used to change the programming
+parameters of a zone. Be very carefull with these commands!
+
+When using the SET action, the state is only applied to the zone if
+it is a 'virtual' zone (ie. the RIO does not exist).
+
+If the SET action is used on an existing zone it does not set the zone
+state, but it does apply the new area id, zone type and zone description!
+
+Although allowed, not specifying at least 'blknum' and 'type' when
+setting the state of an existing zone WILL corrupt its programming!!!
+(It changes the area id and zone type to a random value.)
+
+Not specifying the 'desc' option when changing the state of an existing
+zone will remove the zone desription from the panels programming!
+
+
+-- ZONES ------------------------------------------------------------------
+
+Syntax: ZONES <action>
+
+Where:
+
+action  =  READY        Get the ready state of all zones
+           ALARM        Get the alarm state of all zones
+           OPEN         Get the open state of all zones
+           TAMPER       Get the tamper state of all zones
+           RSTATE       Get the resistance state of all zones
+           OMITTED      Get the omitted state of all zones
+
+Returns a JSON object formatted like:
+
+  {
+    "typeId":%u,
+    "typeDesc":"%s",
+    "zoneState":[65]
+  }
+
+Where 'typeId' is:
+  11 for READY,
+  12 for ALARM,
+  13 for OPEN,
+  14 for TAMPER,
+  15 for RSTATE and
+  16 for OMITTED
+
+Note: See 'struct GalaxyZonesState_t' in galaxy.h for the format
+      of the returned byte array 'zoneState' in the JSON reply.
+
+Note: Some of these functions require a panel firmware >= V1.20
+
+
+-- OUTPUT -----------------------------------------------------------------
+
+Syntax: OUTPUT <nr> <action> [blknum]
+        OUTPUT GETALL
+
+Where:
+
+nr      =  Output (1001-4154) or output type (1-100)
+           special output type 0 means all outputs
+
+action  =  ON           Turn the output on
+           OFF          Turn the output off
+
+blknum  =  Area number (1-32, A1-A8, B1-B8, C1-C8, D1-D8)
+           Special area 0 operates on all areas.
+           When not specified, area 0 is implied.
+           Only has effect for actions on output-types.
+
+Returns a JSON object formatted like:
+
+  {
+    "typeId":17,
+    "typeDesc":"%s",
+    "outputState":[32]
+  }
+
+Note: See 'struct GalaxyOutputs32_t' in galaxy.h for the format
+      of the returned byte array 'outputState' in the JSON reply.
+
+Note: Most of the output functions require a panel firmware >= V1.20
+      The GETTALL function seems to work on my V1.07
+
+Note: GETALL returns an array of 32 bytes with
+      each bit representing the state of an output.
+      See 'struct GalaxyOutputs32_t' in galaxy.h
+
+Note: When setting by output number the panel will ignore
+      that outputs programming and just performs <action>.
+      When setting by type, the outputs will follow their
+      normal programming.
+
+
+-- POLL -------------------------------------------------------------------
+
+Syntax: POLL <action> [interval]
+        POLL <action> <item>
+
+Where:
+
+action   =  ON           Turn on polling the panel every [interval] seconds
+            OFF          Turn off the polling
+            ADD          Add <item> to the things to poll (default is NONE)
+            REMOVE       Remove <item> from the things to poll.
+            ONCE         Poll the panel once.
+
+interval =  The number of seconds between each time the panel is polled.
+            The caller should not depend on the set interval,
+            the interval from the client with the shortest interval is used.
+
+item     =  AREAS        Poll the READY state for all areas
+            ZONES        Poll all zones
+            OUTPUTS      Poll all outputs
+            ALL          All of the above items are polled
+            NONE         Poll nothing (default)
+
+Returns a JSON object every [interval] seconds that is formatted like:
+
+  {
+    "typeId":18,
+    "typeDesc":"%s",
+    "panelIsOnline":%u,
+    "haveAreaState":%u,
+    "haveZoneState":%u,
+    "haveOutputState":%u,
+    "areaState":[32],
+    "zoneState":[65],
+    "outputState":[32]
+  }
+
+Note: All actions return the default JSON (typeId 1) reply.
+
+Note: The ADD/REMOVE actions may be used at any time.
+      If no items are polled, this command can still be used to
+      determine if the panel is online with the 'panelIsOnline' value.
+
+Note: The returned (typeId 18) JSON object may contain more items then a
+      client asked to poll.
+
+Note: If multiple clients are polling the panel, the smallest [interval]
+      is used to time the polling for all clients.
+
+
+-- CODE-ALARM -------------------------------------------------------------
+
+Syntax: CODE-ALARM [module]
+
+Generates an illigal code alarm on the given communications module or on
+all modules if not specified.
+
+Where 'module' is:
+
+  TELECOM  =  The telephone module.
+  RS232    =  The RS232 module.
+  MONITOR  =  The AlarmMonitor (same as telecom).
+  ALL      =  All SIA modules (same as telecom).
+
+Note: Returns a default JSON object ('typeId' = 1).
+
+---------------------------------------------------------------------------
+
+
+Command examples:
+-----------------
+
+# Arm area 1 (A1) (not recommended, use the 'force' action instead)
+AREA 1 SET
+
+# Arm area 1 (A1) overruling any open zones
+AREA A1 FORCE
+
+# Partialy arm area D7 (31)
+AREA D7 PARTIAL
+
+# Disarm all areas
+AREA 0 UNSET
+
+# Omit zone 2145
+ZONE 2145 OMIT
+
+# Omit all zones with type 1/FINAL/LAATSTE
+ZONE FINAL OMIT
+
+# Enable soak-test for zone 1001
+ZONE 1001 PARAMETER SOAK-TEST ON
+
+# Reprogram existing zone 1006:
+#  set state to closed (has no effect)
+#  set area id to B6
+#  set zone type to 3 (INTRUDER/INBRAAK)
+#  set zone text to 'Test Zone'
+ZONE 1006 SET CLOSED B6 INTRUDER "Test Zone"
+
+# Arm area D8 (32) and cause an alarm on non-existing (virtual) zone 3001
+# with zone text "Testing 1 2 3"
+# (on my panel, the alarm will say it is on area 1, a firmware bug?)
+AREA D8 FORCE
+(wait untill armed)
+ZONE 3001 SET OPEN-CLOSE D8 INTRUDER Testing 1 2 3
+
+# Activate output 1002
+OUTPUT 1002 ON
+
+# Generate an illigal code alarm on the RS232 module
+CODE-ALARM RS232
+

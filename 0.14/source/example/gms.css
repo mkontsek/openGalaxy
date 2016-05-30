@@ -1,0 +1,78 @@
+/* CSS voor pagina body */
+html, body {
+/* width            : 100%;*/
+ height           : 100%;
+ margin           : 0px;
+ border           : 0px;
+ padding          : 0px;
+ overflow-y         : hidden;
+ font-size        : .8em;                   /* 1em = 16px bij default zoomlevel */
+ background-color : black;
+}
+
+.GMS-Pending-Alarms-Dialog-outer_div {
+ overflow-x:auto;
+ overflow-y:hidden;
+ width:100%;
+ height:100%;
+}
+
+.GMS-Pending-Alarms-Dialog-outer_table {
+ padding:0px;
+/* margin:auto; */
+ border:0px;
+ table-layout:fixed;
+ width:1310px; /* breedte van de complete tabel */
+ border-collapse: collapse;
+}
+
+.GMS-Pending-Alarms-Dialog-inner_div {
+ height:510px; /* hoogte van de complete tabel = hoogte van dialog - 90 */
+ overflow-y:auto;
+}
+
+.GMS-Pending-Alarms-Dialog-inner_div_no_x_scrollbar {
+ height:530px; /* hoogte van de complete tabel = hoogte van dialog - 70*/
+ overflow-y:auto;
+}
+
+.GMS-Pending-Alarms-Dialog-inner_table {
+ border-collapse: collapse;
+}
+
+.GMS-Pending-Alarms-Dialog-inner_table th, .GMS-Pending-Alarms-Dialog-outer_table th { white-space:nowrap; padding: .4em 0px; text-align: left; }
+.GMS-Pending-Alarms-Dialog-inner_table td { padding: .4em 0px; text-align: left; }
+
+
+.GMS-Pending-Alarms-Dialog-th1 { width: 130px; }
+.GMS-Pending-Alarms-Dialog-th2 { width: 80px; }
+.GMS-Pending-Alarms-Dialog-th3 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-th4 { width: 175px; }
+.GMS-Pending-Alarms-Dialog-th5 { width: 175px; }
+.GMS-Pending-Alarms-Dialog-th6 { width: 400px; }
+.GMS-Pending-Alarms-Dialog-th7 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-th8 { width: 70px; }
+.GMS-Pending-Alarms-Dialog-th9 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-th10 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-th11 { width: 110px; }
+.GMS-Pending-Alarms-Dialog-th_x_filler { width: 0px; }
+
+.GMS-Pending-Alarms-Dialog-td1 { width: 130px; }
+.GMS-Pending-Alarms-Dialog-td2 { width: 80px; }
+.GMS-Pending-Alarms-Dialog-td3 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-td4 { width: 175px; }
+.GMS-Pending-Alarms-Dialog-td5 { width: 175px; }
+.GMS-Pending-Alarms-Dialog-td6 { width: 400px; }
+.GMS-Pending-Alarms-Dialog-td7 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-td8 { width: 70px; }
+.GMS-Pending-Alarms-Dialog-td9 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-td10 { width: 50px; }
+.GMS-Pending-Alarms-Dialog-td11 { width: 80px; }
+.GMS-Pending-Alarms-Dialog-td_x_filler { width: 0px; }
+
+.GMS-Error-Dialog-extra_icon {
+ display: inline-block;
+ float: left;
+ margin-right: 10px;
+}
+

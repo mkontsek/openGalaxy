@@ -1,0 +1,136 @@
+2016-04-19  Version 0.14
+
+   - Much better authentication than 'http basic auth'
+   - Better encryption method for embedded certificate data (allows for more data)
+   - The server now starts in http mode if not all SSL certificates are found.
+   - Added the ability to upload certificates to a running server.
+   - Changed file extention of exported client certificates (.p12 -> .pfx)
+   - Added some http headers to prevent caching of some files by the web browser.
+   - Disabled HTTP2/ALPN (for now) as it is marked experimental in libwebsockets.
+   - Updated Jquery to 2.2.3 and Jquery UI to 1.11.4
+   - Some UI fixes in the webinterface
+   - No longer distribute libwebsockets and openssl in the source package
+     (they are cloned from github during the build instead).
+   - New documentation for the certificate manager.
+
+
+2016-03-22  Version 0.13
+
+   - Added the option to ask for a username/password (in addition to a certificate).
+   - Added session support (using server redirects).
+   - Support for automatic logoff after timeout (not perfect yet so disabled by default).
+   - Combined the two websocket protocols implemented by openGalaxy into a single protocol
+     for both SIA messages and the commands send to the panel.
+   - Bugfix: The windows installer no longer overwrites passphrase.txt
+   - Completely removed support for wolfSSL (it may or may not return in a future version).
+   - Upgraded to libwebsockets 1.7.4 and openssl 1.0.2g
+   - Windows Bugfix: Misconfiguration of the serialport caused SerialPort::read() to
+     eat any bytes with a 0 value.
+
+
+2016-02-18  Version 0.12.1
+   - Windows Hotfix: opengalaxy (server) crashed when not using SSL.
+     This patch fixes this issue.
+
+
+2015-07-12  Version 0.12
+
+   - Added 'build-debs' script to build .deb packages for Debian and possibly Ubuntu.
+     It can also cross-compile for Raspbian (Raspberry Pi 2).
+   - Added Windows 64bit support
+   - opengalaxy: Complete re-write of the server application in C++11.
+   - opengalaxy: Switched the default SSL provider back to OpenSSL (for now).
+   - opengalaxy: Added a new output plugin: Write SIA messages to a text file.
+   - opengalaxy: Blacklist the originating IP address for 1 minute after a failed login.
+     This also generates an illigal code alarm on the connected panel.
+   - opengalaxy: Added new actions 'SET' and 'PARAMETER' to the 'ZONE' command.
+     With these you can set the part-set and soak-test parameters of a zone
+     or set a (virtual) zone's state to open, closed or tamper.
+   - opengalaxy: Added the new ZONE actions to the webinterface.
+   - opengalaxy: Added a new command 'CODE-ALARM' that generates an
+     illigal code alarm on the panel.
+   - opengalaxy: Linux: Sending a SIGHUP signal will restart the server,
+     reloading all settings and certificates/crl.
+   - Bugfix: opengalaxy-ca: server certificate:
+     Add the CN as the first item in subjectAltName, this fixes a 'cert not
+     issued by CN' error when the cert is validated in a webbrowser running
+     on another machine in the network.
+   - Bugfix: opengalaxy-ca:
+     - Display all alternative dns/ip names for an existing server cert.
+     - On the client tab, name and surname entries may now contain whitespaces.
+   - opengalaxy-ca: Always use the openssl executeable in our installation directory. (windows)
+   - opengalaxy-client: no new features in this release.
+   - opengalaxy-client: Bugfix: reduced a timer speed that resulted in high cpu useage.
+
+
+2015-07-12  Version 0.11
+
+   - Debianized openGalaxy, building debian packages is now possible.
+   - Changed the name of the sourcecode archive (galaxy-[version].tar.xz -> opengalaxy-[version].tar.xz)
+   - Changed the names of the executeables to comply with Debian GNU/Linux policy,
+     https://www.debian.org/doc/devel-manuals#policy
+   - Added Raspberry Pi support (raspbian)
+   - Better JSON object parsing functions.
+   - The 'Areas' tab of the GTK+ client application is now somewhat functional.
+   - Added (experimental) new command 'POLL', see API.TXT.
+   - Removed the need for CyaSSL and websockets system libraries,
+     they are now build locally as part of the opengalaxy build process.
+   - Bugfix: opengalaxy-ca: Seed the random number generator before creating a new private key.
+   - Dropped support for compiling the server with OpenSSL, and moved to wolfSSL instead.
+   - Certificate based client authentication now actually works :-) 
+   - OpenSSL and libmysqlclient sources are no longer distributed with opengalaxy.
+   - Bugfix: using 4096bit private keys for client certificates now works on both Windows and Linux.
+   - Linux: Implemented strict file security for accessing the certificates,
+     users need to be a member of group staff to run the server or certificates manager.
+
+
+2015-04-20  Version 0.10.1
+
+   - Added the beginnings of a GTK+ client application
+   - Updated websockets library to: libwebsockets v1.4 rev 2a5774e
+   - Updated SSL library to: CyaSSL: 3.3.2 rev2429
+   - Bugfix: Makefile.am: Fixed rpath not being added to buildflags for openGalaxyCA (Linux)
+   - Bugfix: CyaSSL: Removed the need to patch libwebsockets (CyaSSL must be build with --enable-fortress)
+   - Enhancement: Keep the openGalaxy (server) window open after an error (using cmd /k).
+
+2015-03-22	Version 0.10.0
+
+   - Added a new openGalaxyCA program that is cross platform
+   - Added an installer for the Windows binaries (Using NSIS)
+   - Fixed a bug that crashed openGalaxy in a very specific situation.
+   - More (bug) fixes.
+
+2015-02-22	Version 0.9.2
+
+   - Various small bugfixes in the C code
+   - Moved to MSYS2 for the Windows build
+
+2015-01-15	Version 0.9.1
+
+   - Enabled SSL for the Windows binaries. (No certificate generation without MSYS/MinGW or Cygwin yet.)
+   - openGalaxyCA: Changed the default message digest algorithm (md_default) from SHA-1 to SHA-256
+   - Tweaked the CSS a little so that the web interface looks the same on IE
+
+2015-01-11	Version 0.9
+
+   - New webinterface.
+   - Precompiled windows binaries: Forgot to distribute CreateDatabase.sql and CreateUser.sql (FIXED)
+   - Rewrote the way data is send back to the panel.
+   - Where possible threads now use pthread_cond_timedwait() in stead of usleep() to sleep.
+
+2014-09-13	Version 0.8
+
+   - Added (preliminary) support for Windows (compiled using MinGW/MSYS) (No SSL support yet)
+   - openGalaxyCA.in: CA.conf is no longer parsed as script.
+   - openGalaxyCA.in: Various other fixes/updates
+   - openGalaxy: Replies to commands are now formatted in JSON
+   - openGalaxy: Areas may now be specified using A1...D8 in addition to 1...32
+
+
+Version 0.7	- Added the use of SSL certificates (both client and server side)
+
+Version 0.6.1	- No new features, just a better(?) configure script with
+		  more configuration options and an updated readme file.
+
+Version 0.6	- Added websocket interface
+

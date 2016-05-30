@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=@PACKAGE_VERSION@
+Name=openGalaxy CA
+GenericName=openGalaxy Certificate Manager
+Icon=/usr/share/icons/Adwaita/48x48/mimetypes/application-certificate.png
+Exec=/usr/bin/opengalaxy-ca
+Categories=System;

@@ -1,0 +1,125 @@
+.TH OPENGALAXY 8 2015-07-12
+.SH NAME
+opengalaxy \- Send and receive SIA messages to and from a Galaxy security control panel.
+.SH SYNOPSIS
+.B opengalaxy
+.RB [\fB\-h\fR\ |\ \fB\-\-help\fR]
+.RB [\fB\-l\fR\ |\ \fB\-\-license\fR]
+.RB [\fB\-v\fR\ |\ \fB\-\-version\fR]
+.RB [\fB\-\-port=\fR\fB\fIprt\fR\fR]
+.RB [\fB\-n\fR\ |\ \fB\-\-no\-client\-certs\fR]
+.RB [\fB\-d\fR\ |\ \fB\-\-disable\-ssl\fR]
+.SH DESCRIPTION
+.B opengalaxy
+sends and receives SIA messages to a Galaxy security control panel using a serial port.
+A webinterface is also hosted on port \fB\fIprt\fR\fR and received messages are optionally send to a MySQL database and/or an SMTP server.
+.PP
+.B Users executing opengalaxy need to be a member of group 'staff',
+.B and (at least on Debian GNU/Linux) users must be a member of group 'dialout' to be able to access a serial port!
+.B To use the email output plugin the user may need to be a member of group 'mail'.
+.PP
+A running instance of
+.B opengalaxy
+can be stopped by pressing <CTRL>+C or by sending a SIGINT signal to the process PID.
+.PP
+.B The Galaxy security control panel must be configured as follows:
+.TP 2
+.B +
+Using the installer code, go to communications menu (56) and select the RS232 module.
+.TP 2
+.B +
+Program the RS232 module for SIA level 3 (or 4 if available) and select all triggers (Older panels may name the SIA protocol as 'MultiPro').
+.TP 2
+.B +
+Configure the baudrate settings of the RS232 module at any speed, using 8N1.
+Remember to set the same value for the baudrate setting in
+.I galaxy.conf
+.TP 2
+.B +
+The Account ID setting may have any value but must not be left empty.
+.SH OPTIONS
+.TP 8
+.B -h
+Prints a small help message and exits.
+.TP 8
+.B -l
+Displays license and copyright information, then exits.
+.TP 8
+.B -v
+Displays openGalaxy's version information and quits.
+.TP
+.B --port
+The port number the openGalaxy webservice is hosted at. The default value is
+.I 1500
+for Linux. And
+.I 443
+for the Windows binaries (
+.I 80
+when the
+.B -d
+option has been set ).
+.TP 8
+.B -n
+Do not require clients to present a (valid) client certificate.
+.TP 8
+.B -d
+Disable SSL entirely.
+.SH NOTES
+.B Initial MySQL setup
+.PP
+To assist the initial creation of the database used by the MySQL output plug-in some extra files have been installed to
+.I @man_sql_files@
+, execute:
+.PP
+.B mysql -u
+.I root
+.B -p -h
+.I server
+.B <
+.I @man_sql_files@/CreateDatabase.sql
+.br
+.B mysql -u
+.I root
+.B -p -h
+.I server
+.B <
+.I @man_sql_files@/CreateUser.sql
+.PP
+Where
+.I root
+is a MySQL user that has the rights to create the database/user and
+.I server
+is the address of the MySQL server.
+.PP
+(Edit 
+.I CreateUser.sql
+to change the password used to connect to the database, the default is 'topsecret'.)
+.PP
+.B Email output
+.PP
+If you use a gmail account to send the emails then it may be nessesary
+to enable 'Less Secure Apps' to allow ssmtp to use the account.
+To enable this gmail option, login to the account with a browser and
+go to the address:
+.I https://www.google.com/settings/security/lesssecureapps
+.PP
+.B Windows Firewall
+.PP
+For Windows only; The first time the opengalaxy server application is started,
+.B Windows Firewall
+will popup a dialog to ask wether or not to block the program's network
+access.
+.B Choose to allow the program for the appropriate networks.
+.SH FILES
+.I @man_galaxy_conf@
+All configureable settings that are not set from the commandline are stored this file.
+.PP
+.I @man_ssmtp_conf@
+The configuration file for the
+.B ssmtp
+program called when openGalaxy sends an email.
+.SH "SEE ALSO"
+.BR galaxy.conf (5),
+.BR opengalaxy-client (1),
+.BR opengalaxy-ca (8),
+

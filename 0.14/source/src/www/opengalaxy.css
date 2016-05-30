@@ -1,0 +1,893 @@
+
+/*
+  This file is part of openGalaxy.
+
+  opengalaxy - a SIA receiver for Galaxy security control panels.
+  Copyright (C) 2015 - 2016 Alexander Bruines <alexander.bruines@gmail.com>
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License version 2 as
+  as published by the Free Software Foundation, or (at your option)
+  any later version.
+
+  In addition, as a special exception, the author of this program
+  gives permission to link the code of its release with the OpenSSL
+  project's "OpenSSL" library (or with modified versions of it that
+  use the same license as the "OpenSSL" library), and distribute the
+  linked executables. You must obey the GNU General Public License
+  in all respects for all of the code used other than "OpenSSL".
+  If you modify this file, you may extend this exception to your
+  version of the file, but you are not obligated to do so.
+  If you do not wish to do so, delete this exception statement
+  from your version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+.nobr		{ white-space:	nowrap;			}
+.fat		{ font-weight:	bold;			}
+.font		{ font-family:	Arial;			}
+.hide		{ display:	none;			}
+.show		{ display:	block !important;	}
+.small		{ font-size:	0.75em;			}
+
+.red		{ color:	red;			}
+.green		{ color:	green;			}
+.orange		{ color:	orange;			}
+.blue		{ color:	blue;			}
+.yellow		{ color:	Gold;			}
+.violet		{ color:	DarkViolet;		}
+
+.ui-menu	{ width:	150px;			}
+.hide_menu	{ display:	none;			}
+.show_menu	{ display:	block !important;	}
+.cursor_menu	{ cursor:	pointer; text-decoration: underline; font-weight: bold; }
+.cursor_nomenu { cursor:	default; font-weight: bold; }
+
+
+
+/*************************************************/
+
+html, body {
+ height:		100%;
+ margin:		0px;
+ border:		0px;
+ padding:		0px;
+ overflow-y:		hidden; 
+ background-color:	lightgrey;
+
+ /* changing font-size here causes the entire jquery-ui theme to scale with it */
+ font-size: 12px;
+}
+
+ul, ol {
+ list-style-type:       none;
+}
+
+div, h3 {
+ margin:		0px;
+ border:		0px;
+ padding:		0px;
+}
+
+#Desktop {
+ width:			100%;
+ height:		100px;
+ margin:		0px;
+ border:		0px;
+ padding:		0px;
+}
+
+#Toolbox {
+ width:			100%;
+ height:		1px;
+ margin:		0px;
+ border:		0px;
+ padding:		0px;
+}
+
+#Spacer {
+ width:			100%;
+ height:		10px;
+ margin:		0px;
+ border:		0px;
+ padding:		0px;
+ cursor:		ns-resize;
+ z-index:		1;
+}
+
+hr.ns-resize {
+ margin:		10px;
+ padding:		0;
+ border:		none;
+ border-top:		medium double #333;
+ color:			#333;
+ text-align:		center;
+ z-index:		1;
+}
+hr.ns-resize:after {
+ content:		"↕"; /* &#x2195; */
+ display:		inline-block;
+ position:		relative; 
+ top:			-0.7em;
+ font-size:		1.5em; 
+ padding:		0 0.25em; 
+ background:		transparent;
+ z-index:		1;
+}
+
+#SIA-Messages {
+ width:			100%;
+ height:		220px;
+ margin:		0px;
+ border:		0px;
+ padding:		0px;
+}
+
+#ws_url {
+ word-wrap:		break-word;
+ cursor:		default;
+}
+
+#ws_url_container {
+ margin-top:		10px;
+}
+
+#ws_url_status {
+ cursor:		default;
+ color:			black;
+}
+
+#ws_cmd_status {
+ margin-top:		14px;
+ cursor:		default;
+ color:			black;
+}
+
+#SocketStatus-Menu {
+ display:		none;
+ position:		absolute;
+ z-index:		101;
+}
+
+.ui-accordion .ui-accordion-content {
+ background-image:      url("tiles.png");
+ background-repeat:     repeat;
+}
+
+/* AREAS **************************************************/
+
+#selectableAreas .ui-selecting { background: #FECA40; }
+#selectableAreas .ui-selected  { background: #F39814; color: white; }
+#selectableAreas, #statusAreas {
+ list-style-type:	none;
+ margin:		0;
+ padding:		0;
+ width:			440px;
+}
+#selectableAreas li, #statusAreas li {
+ margin:		3px;
+ padding:		1px;
+ float:			left;
+ width:			40px;
+ height:		35px;
+ font-size:		2em;
+ text-align:		center;
+}
+.selectableArea {  }
+
+#areaButtons {
+ position:		relative;
+ top:			16px;
+ left:			20px;
+ width:			1px;
+}
+
+#areaHelp {
+ display:		inline-block;
+ position:		absolute;
+ left:			520px;
+ top:			140px;
+}
+
+#areaStateButtons {
+ position:		relative;
+ top:			16px;
+ left:			60px;
+ width:			1px;
+}
+
+#areaStateHelp {
+ display:		inline-block;
+ position:		absolute;
+ left:			470px;
+ top:			130px;
+}
+
+.stateAreaStateText     { color:      grey       !important; }
+.readyAreaStateText     { color:      black      !important; }
+.alarmAreaStateText     { color:      white      !important; }
+.disarmedAreaState      { background: blue       !important; }
+.armedAreaState         { background: red        !important; }
+.partialAreaState       { background: DarkViolet !important; }
+.readyAreaState         { background: green      !important; }
+.timeLockedAreaState    { background: orange     !important; }
+.normalAreaState        { background: green      !important; }
+.alarmAreaState         { background: red        !important; }
+.resetRequiredAreaState { background: blue       !important; }
+
+/* ZONES OMIT **********************************************/
+
+.menuselectOverflow {
+ height:		208px;
+}
+
+.menuselectOverflowProgramZoneState {
+ height:		108px;
+}
+
+.omitZonesFieldset {
+ display:		inline-block;
+ margin:		0px;
+ padding:		0px;
+ padding-left:		5px;
+ padding-bottom:	5px;
+ border:		2px groove;
+ overflow:		hidden;
+ width:                 250px;
+}
+
+.omitStart {
+ display:		block;
+ position:		relative;
+}
+
+.omitEnd {
+ display:		block;
+ position:		relative;
+ top:			10px;
+ left:			0px;
+}
+
+.omitType {
+ display:		block;
+ position:		relative;
+ top:			20px;
+ left:			0px;
+}
+
+.omitFinal {
+ display:		block;
+ position:		relative;
+ top:			-136px;
+ left:			272px;
+}
+
+.omitZonesSelect {
+ width:			80px;
+}
+
+.omitZonesSelectByType {
+ width:			240px;
+}
+
+.omitZonesSelected {
+ display:		table-cell;
+ text-align:		center;
+ vertical-align:	middle;
+ width:			210px;
+ height:		34px;
+}
+
+.omitZonesOl {
+ list-style-type:	none;
+ position:		relative;
+ margin:		0;
+ padding:		0;
+}
+
+.omitZonesOl li {
+ position:		relative;
+ float:			left;
+}
+
+.omitZonesLabelSpan {
+ position:		relative;
+ left:			-10px;
+ width:			100%;
+}
+
+.omitButtonOmit {
+ top:			-175px;
+ left:			536px;
+}
+
+.omitButtonUnomit {
+ top:			-175px;
+ left:			540px;
+}
+
+#zoneOmitHelp {
+ display:		inline-block;
+ position:		absolute;
+ left:			320px;
+ top:			168px;
+}
+
+/* ZONES STATUS ********************************************/
+
+.tamperScZoneState              { background: orange !important; color: red   !important; }
+.tamperOcZoneState              { background: orange !important; color: black !important; }
+.tamperCvZoneState              { background: orange !important; color: white !important; }
+.tamperAnyZoneState             { background: orange !important; color: gray  !important; }
+.resistanceLowZoneState         { background: yellow !important; color: red   !important; }
+.resistanceHighZoneState        { background: yellow !important; color: black !important; }
+.resistanceAnyZoneState         { background: yellow !important; color: gray  !important; }
+.maskedZoneState                { background: blue   !important; color: gray  !important; }
+.faultZoneState                 { background: blue   !important; color: white !important; }
+.closedZoneState                { background: green  !important; color: black !important; }
+.openZoneState                  { background: red    !important; color: white !important; }
+.alarmZoneState                 { background: red    !important; color: black !important; }
+
+.statusZonesFieldset {
+ display:		inline-block;
+ margin:		0px;
+ padding:		0px;
+ padding-left:		5px;
+ padding-bottom:	5px;
+ border:		2px groove;
+ overflow:		hidden;
+ width:                 250px;
+ position:              absolute;
+ top:                   70px;
+ left:                  40px;
+}
+
+#zoneStatusHelp {
+ display:		inline-block;
+ position:		absolute;
+ top:                   150px;
+ left:                  80px;
+}
+
+#statusZonesRIO {
+ height:                270px;
+ display:		inline-block;
+ position:		absolute;
+ left:			320px;
+}
+
+#statusZones {
+ list-style-type:	none;
+ margin:		0;
+ padding:		0;
+ width:			50px;
+ display:		inline-block;
+ position:              absolute;
+ top:                   70px;
+ left:                  540px;
+}
+
+#statusZones li {
+ margin:		3px;
+ padding:		1px;
+ float:			left;
+ width:			27px;
+ height:		22px;
+ font-size:		1.4em;
+ text-align:		center;
+}
+
+#statusZonesButtons {
+ display:		inline-block;
+ position:		absolute;
+ left:      570px;
+ top:       80px;
+}
+
+#statusZonesButtons td {
+ float:			left;
+ text-align:		center;
+ width:			350px;
+ padding-top:	5px;
+ padding-bottom:	5px;
+}
+
+.statusZonesSelect {
+ width:			80px;
+}
+
+#statusZonesToDo {
+ position:              absolute;
+ top:                   190px;
+ left:                  860px;
+ white-space:           nowrap;
+}
+
+/* ZONES PARAMETERS *****************************************/
+
+.parametersZonesFieldset {
+ display:		inline-block;
+ margin:		0px;
+ padding:		0px;
+ padding-left:		5px;
+ padding-bottom:	5px;
+ border:		2px groove;
+ overflow:		hidden;
+ width:                 250px;
+}
+
+.parametersStart {
+ display:		block;
+ position:		relative;
+}
+
+.parametersFinal {
+ display:		block;
+ position:		relative;
+ top:			-76px;
+ left:			274px;
+}
+
+.parametersType {
+ display:		block;
+ position:		relative;
+ top:			20px;
+ left:			0px;
+}
+
+.parametersZonesLabelSpan {
+ position:		relative;
+ left:			-10px;
+ width:			100%;
+}
+
+.parametersZonesOl {
+ list-style-type:	none;
+ position:		relative;
+ margin:		0;
+ padding:		0;
+}
+
+.parametersZonesOl li {
+ position:		relative;
+ float:			left;
+}
+
+.parametersZonesSelectByType {
+ width:			240px;
+}
+
+.parametersZonesSelected {
+ display:		table-cell;
+ text-align:		center;
+ vertical-align:	middle;
+ width:			210px;
+ height:		34px;
+}
+
+.parametersZonesSelect {
+ width:			80px;
+}
+
+.parametersButtonSoakTestOn {
+ top:			-165px;
+ left:			545px;
+}
+
+.parametersButtonSoakTestOff {
+ top:			-165px;
+ left:			545px;
+}
+
+.parametersButtonPartSetOn {
+ top:			-70px;
+ left:			293px;
+}
+
+.parametersButtonPartSetOff {
+ top:			-70px;
+ left:			293px;
+}
+
+#zoneParametersHelp {
+ display:		inline-block;
+ position:		absolute;
+ left:			60px;
+ top:			216px;
+}
+
+/* ZONES PROGRAMMING ****************************************/
+
+.programZonesFieldset {
+ display:		inline-block;
+ margin:		0px;
+ padding:		0px;
+ padding-left:		5px;
+ padding-bottom:	5px;
+ border:		2px groove;
+ overflow:		hidden;
+ width:                 250px;
+}
+
+.programStart {
+ display:		block;
+ position:		relative;
+}
+
+.programFinal {
+ display:		block;
+ position:		relative;
+ top:			-110px;
+ left:			264px;
+}
+
+.programState {
+ display:		block;
+ position:		relative;
+ top:			10px;
+ left:			0px;
+}
+
+.programArea {
+ display:		block;
+ position:		relative;
+ top:			-114px;
+ left:			266px;
+}
+
+.programType {
+ display:		block;
+ position:		relative;
+ top:			-171px;
+ left:			416px;
+}
+
+.programDesc {
+ display:		block;
+ position:		relative;
+ top:			-228px;
+ left:			636px;
+}
+
+.programZonesLabelSpan {
+ position:		relative;
+ left:			-10px;
+ width:			100%;
+}
+
+.programZonesOl {
+ list-style-type:	none;
+ position:		relative;
+ margin:		0;
+ padding:		0;
+}
+
+.programZonesOl li {
+ position:		relative;
+ float:			left;
+}
+
+.programState {
+ width:			194px;
+}
+.programStateSelect {
+ width:			186px;
+}
+
+.programArea {
+ width:			134px;
+}
+.programAreaSelect {
+ width:			126px;
+}
+
+.programType {
+ width:			204px;
+}
+.programTypeSelect {
+ width:			196px;
+}
+
+.programDesc {
+ width:			184px;
+}
+.programDescInput {
+ margin: 4px;
+ padding: 4px;
+ width: 160px;
+}
+
+.programZonesSelected {
+ display:		table-cell;
+ text-align:		center;
+ vertical-align:	middle;
+ width:			210px;
+ height:		46px;
+}
+
+.programZonesSelect {
+ width:			80px;
+}
+
+.programButton {
+ top:			-200px;
+ left:			464px;
+}
+
+#zoneProgramHelp {
+ display:		inline-block;
+ position:		absolute;
+ left:			150px;
+ top:			200px;
+}
+
+/* OUTPUTS (RE)SET ******************************************/
+
+.outputsSetFieldset {
+ display:		inline-block;
+ margin:		0px;
+ padding:		0px;
+ padding-left:		5px;
+ padding-bottom:	5px;
+ border:		2px groove;
+ overflow:		hidden;
+ width:                 250px;
+}
+
+.outputStart {
+ display:		block;
+ position:		relative;
+}
+
+.outputEnd {
+ display:		block;
+ position:		relative;
+ top:			10px;
+ left:			0px;
+}
+
+.outputType {
+ display:		block;
+ position:		relative;
+ top:			20px;
+ left:			0px;
+}
+
+.outputFinal {
+ display:		block;
+ position:		relative;
+ top:			-170px;
+ left:			270px;
+}
+
+.outputsSetSelect {
+ width:			80px;
+}
+
+.outputsSetSelectByType {
+ width:			240px;
+}
+
+.outputsSetSelected {
+ display:		table-cell;
+ text-align:		center;
+ vertical-align:	middle;
+ width:			210px;
+ height:		34px;
+}
+
+.outputsSetOl {
+ list-style-type:	none;
+ position:		relative;
+ margin:		0;
+ padding:		0;
+}
+
+.outputsSetOl li {
+ position:		relative;
+ float:			left;
+}
+
+.outputsSetLabelSpan {
+ position:		relative;
+ left:			-10px;
+ width:			100%;
+}
+
+.outputButtonSet {
+ top:			-210px;
+ left:			540px;
+}
+
+.outputButtonUnset {
+ top:			-210px;
+ left:			544px;
+}
+
+#outputsSetHelp {
+ display:		inline-block;
+ position:		absolute;
+ left:			316px;
+ top:			200px;
+}
+
+/* OUTPUT STATUS *******************************************/
+
+.onOutputState          { background: red !important; color: black !important; }
+.offOutputState         { background: blue !important; color: white !important; }
+
+.statusOutputsFieldset {
+ display:		inline-block;
+ margin:		0px;
+ padding:		0px;
+ padding-left:		5px;
+ padding-bottom:	5px;
+ border:		2px groove;
+ overflow:		hidden;
+ width:                 250px;
+ position:              absolute;
+ top:                   70px;
+ left:                  50px;
+}
+
+#outputStatusHelp {
+ display:		inline-block;
+ position:		absolute;
+ top:                   200px;
+ left:                  50px;
+}
+
+#statusOutputsRIO {
+ height:                270px;
+ display:		inline-block;
+ position:		absolute;
+ left:			320px;
+}
+
+#statusOutputs {
+ list-style-type:	none;
+ margin:		0;
+ padding:		0;
+ width:			50px;
+ display:		inline-block;
+ position:              absolute;
+ top:                   100px;
+ left:                  530px;
+}
+
+#statusOutputs li {
+ margin:		3px;
+ padding:		1px;
+ float:			left;
+ width:			40px;
+ height:		35px;
+ font-size:		2em;
+ text-align:		center;
+}
+
+.statusOutputsButtonUpdate {
+ position:              absolute;
+ top:                   114px;
+ left:                  550px;
+}
+
+.statusOutputsSelect {
+ width:			80px;
+}
+
+/* SIA TABLE *****************************************************************/
+
+.sia-table-outer_div {
+ overflow-x:		auto;
+ overflow-y:		hidden;
+ width:			auto;
+ height:		100%;
+ background-color:      transparent;
+ padding:		0px;
+ border:		0px;
+}
+
+.sia-table-outer_table {
+ padding:		0px;
+ border:		0px;
+ table-layout:		fixed;
+ width:			750px;
+ border-collapse:	collapse;
+ font-family:		Arial;
+/* font-size:		7pt;*/
+ font-size:		0.9em;
+ font-weight:		normal;
+ background-color:      transparent;
+}
+
+.sia-table-inner_div {
+ height:		135px;
+ overflow-y:		auto;
+ background-color:      transparent;
+}
+
+.sia-table-inner_div_no_x_scrollbar {
+ height:		155px;
+ overflow-y:		auto;
+ background-color:      transparent;
+}
+
+.sia-table-inner_table {
+ border-collapse:	collapse;
+ font-family:		Arial;
+/* font-size:		7pt;*/
+ font-size:		0.9em;
+ font-weight:		normal;
+ background-color:      transparent;
+}
+
+.sia-table-inner_table th, .sia-table-outer_table th {
+ white-space:		nowrap;
+ padding:		.2em 0px;
+ text-align:		left;
+ background-color:      transparent;
+}
+
+.sia-table-inner_table td {
+ padding:		.2em 0px;
+ text-align:		left;
+ background-color:      transparent;
+}
+
+.sia-table-th1  { width: 65px;  }
+.sia-table-th2  { width: 70px;  }
+.sia-table-th3  { width: 50px;  }
+.sia-table-th4  { width: 120px;  }
+.sia-table-th5  { width: 180px; }
+.sia-table-th6  { width: 290px; }
+.sia-table-th7  { width: 70px;  }
+.sia-table-th8  { width: 70px;  }
+.sia-table-th9  { width: 50px;  }
+.sia-table-th10 { width: 50px;  }
+.sia-table-th11 { width: 100px;  }
+.sia-table-th_x_filler { width: 0px; }
+.sia-table-td1  { width: 65px;  }
+.sia-table-td2  { width: 70px;  }
+.sia-table-td3  { width: 50px;  }
+.sia-table-td4  { width: 120px;  }
+.sia-table-td5  { width: 180px; }
+.sia-table-td6  { width: 290px; }
+.sia-table-td7  { width: 70px;  }
+.sia-table-td8  { width: 70px;  }
+.sia-table-td9  { width: 50px;  }
+.sia-table-td10 { width: 50px;  }
+.sia-table-td11 { width: 70px;  }
+.sia-table-td_x_filler { width: 0px; }
+
+/* COMMANDER *****************************************************************/
+
+.commander { text-align:center; }
+.commander_input {
+ margin-top:		15px;
+ padding: 7px;
+ font-family: Arial;
+ font-size: 12pt;
+ font-weight: normal;
+ width: 90%;
+}
+
+/* LOGIN DIALOG **************************************************************/
+
+.loginDialog { text-align:center; }
+.loginDialog_input {
+ margin: 6px;
+ padding: 7px;
+ margin-top:		15px;
+ font-family: Arial;
+ font-size: 12pt;
+ font-weight: normal;
+ width: 90%;
+}
+

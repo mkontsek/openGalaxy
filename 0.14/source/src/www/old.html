@@ -1,0 +1,726 @@
+<html lang="en-us">
+<!--
+  This file is part of openGalaxy.
+
+  openGalaxy - a SIA receiver for Galaxy security control panels.
+  Copyright (C) 2015, Alexander Bruines <alexander.bruines@gmail.com>
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License version 2 as
+  published by the Free Software Foundation, with the additional
+  exemption that compiling, linking, and/or using OpenSSL is allowed.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<head>
+<meta charset=utf-8 http-equiv="Content-Language" content="en-us"/>
+
+<title>openGalaxy Command Interface</title>
+
+<style type="text/css">
+html, body { margin: 0px; padding: 0px; height: 100%; background-color: Gainsboro; font-size:1.0em; overflow: auto; }
+pre { padding:10px 0px 0px; margin:0px; border: 0px; }
+.commander { position:absolute; top:0px; left:0px; background-color: OldLace; border: 2px solid black; width: 800px; height: 600px; display:block; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; }
+/*.title { background-color: DodgerBlue; margin: 0px auto; padding: 3px; border-bottom: 2px solid black; -webkit-border-top-left-radius:8px; -moz-border-top-left-radius:8px; border-top-left-radius:8px; -webkit-border-top-right-radius:8px; -moz-border-top-right-radius:8px; border-top-right-radius:8px; text-align:center; font-family: Arial; font-size: 16pt; font-weight: normal; }*/
+.title { margin: 0px auto; padding: 3px; text-align:center; font-family: Arial; font-size: 16pt; font-weight: normal; }
+.connection { vertical-align:top; text-align:center; background:#fffff0; padding:12px; margin:10px auto; font-family: "Arial Black"; font-size: 11pt; font-weight: normal; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; }
+.status { vertical-align:middle; text-align:center; background:#f0f0c0; padding:12px; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; color:black; }
+.command { text-align:center; }
+.command_input { margin: 0px auto; font-family: Arial; font-size: 12pt; font-weight: normal; width: 60%; }
+.response { border: 1px solid black; vertical-align:top; background:#fffff0; height: 200px; width: 750px; padding:12px; margin:10px auto; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; overflow: auto; }
+.messages { border: 1px solid black; vertical-align:top; background:#fffff0; height: 160px; width: 750px; padding:0px 12px; margin:0px auto; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; }
+.nobr { white-space:nowrap; }
+.fat { font-weight:bold; }
+.font { font-family:Arial; }
+.hidden { display: none; }
+.sia-table-outer_div { overflow-x:auto; overflow-y:hidden; width:100%; height:100%; }
+.sia-table-outer_table { padding:0px; border:0px; table-layout:fixed; width:750px; /* breedte van de complete tabel */ border-collapse: collapse; font-family: Arial; font-size: 7pt; font-weight: normal; }
+.sia-table-inner_div { height:135px; /* hoogte van de complete tabel = hoogte van dialog - 90 */ overflow-y:auto; }
+.sia-table-inner_div_no_x_scrollbar { height:155px; /* hoogte van de complete tabel = hoogte van dialog - 70*/ overflow-y:auto; }
+.sia-table-inner_table { border-collapse: collapse; font-family: Arial; font-size: 7pt; font-weight: normal; }
+.sia-table-inner_table th, .sia-table-outer_table th { white-space:nowrap; padding: .4em 0px; text-align: left; }
+.sia-table-inner_table td { padding: .4em 0px; text-align: left; }
+.sia-table-th1 { width: 45px; }
+.sia-table-th2 { width: 50px; }
+.sia-table-th3 { width: 30px; }
+.sia-table-th4 { width: 80px; }
+.sia-table-th5 { width: 105px; }
+.sia-table-th6 { width: 250px; }
+.sia-table-th7 { width: 50px; }
+.sia-table-th8 { width: 50px; }
+.sia-table-th9 { width: 30px; }
+.sia-table-th10 { width: 30px; }
+.sia-table-th11 { width: 80px; }
+.sia-table-th_x_filler { width: 0px; }
+.sia-table-td1 { width: 45px; }
+.sia-table-td2 { width: 50px; }
+.sia-table-td3 { width: 30px; }
+.sia-table-td4 { width: 80px; }
+.sia-table-td5 { width: 105px; }
+.sia-table-td6 { width: 250px; }
+.sia-table-td7 { width: 50px; }
+.sia-table-td8 { width: 50px; }
+.sia-table-td9 { width: 30px; }
+.sia-table-td10 { width: 30px; }
+.sia-table-td11 { width: 50px; }
+.sia-table-td_x_filler { width: 0px; }
+.response_red { color: red; }
+.response_green { color: green; }
+.response_orange { color: orange; }
+.response_blue { color: blue; }
+</style>
+</head>
+
+<body onresize="center_me()" onload="center_me()">
+<div id="commander" class="commander">
+ <p class="title">openGalaxy command interface</p>
+ <table width="100%">
+  <tr><td>
+   <table class="connection" width="400px">
+    <tr><td width="400px" align="center">
+     <div class="nobr" id="ws_url"></div>
+    </td></tr>
+    <tr><td id="socket_status_td" align="center" class="status">
+     <div class="nobr" id="socket_status">Not initialized</div>
+    </td></tr>
+   </table>
+  </td></tr>
+  <tr><td>
+   <div class="command">
+    <input class="command_input" id="command_input" type="text" name="command_input" placeholder=" Enter a galaxy command and press enter..." autofocus autocomplete>
+   </div>
+  </tr></td>
+  <tr><td>
+   <div class="response"><div id="last_command" class="fat font"></div><pre id="response"></pre>
+   </div>
+  </tr></td>
+  <tr><td>
+   <div class="messages">
+    <div class="sia-table-outer_div">
+     <table class="sia-table-outer_table">
+      <thead>
+       <tr class="">
+        <th class="sia-table-th1">Time</th>
+        <th style="display:none;">Account</th>
+        <th class="sia-table-th3">Code</th>
+        <th class="sia-table-th4">Name</th>
+        <th class="sia-table-th5">ASCII</th>
+        <th class="sia-table-th6">Description</th>
+        <th class="sia-table-th7">Type</th>
+        <th class="sia-table-th8">Address</th>
+        <th class="sia-table-th9">User</th>
+        <th class="sia-table-th10">Area</th>
+        <th class="sia-table-th11">Peripheral</th>
+       </tr>
+      <thead>
+      <tbody>
+       <tr>
+        <td colspan="12">
+         <div id="sia-table-inner_div" class="sia-table-inner_div">
+          <table id="GMS-Pending-Alarms-Table" class="sia-table-inner_table">
+           <tbody id="GMS-Pending-Alarms-Table-Body">
+            <!-- filled with websocket data -->
+           </tbody>
+          </table>
+         </div>
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div>
+  </tr></td>
+ </table>
+</div>
+<div id="json" style="display:none;"><!-- JSON.parse() buffer --></div>
+<script>
+
+var JSON_STANDARD_REPLY        = 1;
+var JSON_HELP_REPLY            = 2;
+var JSON_AREA_ARMED_STATE      = 3;
+var JSON_ALL_AREA_ARMED_STATE  = 4;
+var JSON_AREA_ALARM_STATE      = 5;
+var JSON_ALL_AREA_ALARM_STATE  = 6;
+var JSON_AREA_READY_STATE      = 7;
+var JSON_ALL_AREA_READY_STATE  = 8;
+var JSON_ZONE_OMIT_STATE       = 9;
+var JSON_ZONE_STATE            = 10;
+var JSON_ALL_ZONE_READY_STATE  = 11;
+var JSON_ALL_ZONE_ALARM_STATE  = 12;
+var JSON_ALL_ZONE_OPEN_STATE   = 13;
+var JSON_ALL_ZONE_TAMPER_STATE = 14;
+var JSON_ALL_ZONE_R_STATE      = 15;
+var JSON_ALL_ZONE_OMIT_STATE   = 16;
+var JSON_ALL_OUTPUT_STATE      = 17;
+
+function $(x) { return document.getElementById(x); }
+function $$(x) { return document.getElementById(x).style; }
+
+function center_me() {
+  var cw = parseInt($("commander").clientWidth)/2;
+  var ch = parseInt($("commander").clientHeight)/2;
+
+  var nw = parseInt(window.innerWidth)/2 - cw;
+  var nh = parseInt(window.innerHeight)/2 - ch;
+
+  if( nw < 0 ) nw = 0;
+  if( nh < 0 ) nh = 0;
+  $$("commander").left = nw + "px";
+  $$("commander").top = nh + "px";
+}
+
+window.onkeypress = function keyPress(e){
+  var x = e || window.event;
+  var key = (x.keyCode || x.which);
+  if(key == 13 || key == 3){
+   send();
+  }
+}
+
+function get_socket_url()
+{
+  var pcol;
+  var u = document.URL;
+  if (u.substring(0, 5) == "https") {
+    pcol = "wss://";
+    u = u.substr(8);
+  } else {
+    pcol = "ws://";
+    if (u.substring(0, 4) == "http") u = u.substr(7);
+  }
+  u = u.split('/');
+  return pcol + u[0] + "/cli"; // + "/cli" bit is for IE10 workaround
+}
+
+function send() {
+ var c = "";
+ var s = $("command_input").value;
+ if( s.toString() != c.toString() ) {
+  s = s.toLocaleUpperCase();
+  $("last_command").textContent = s;
+  $("response").textContent = "Processing...";
+  socket_commander.send( $("command_input").value );
+  $("command_input").value = "";
+ }
+}
+
+function table_prepend(obj){
+  if(obj) {
+    if( ! obj.EventAddressNumber ) obj.EventAddressNumber = '';
+    if( ! obj.SubscriberID ) obj.SubscriberID = '';
+    if( ! obj.AreaID ) obj.AreaID = '';
+    if( ! obj.PeripheralID ) obj.PeripheralID = '';
+
+    var table  = $("GMS-Pending-Alarms-Table");
+    var row    = table.insertRow(0);
+    var cell1  = row.insertCell(0);
+    var cell2  = row.insertCell(1);
+    var cell3  = row.insertCell(2);
+    var cell4  = row.insertCell(3);
+    var cell5  = row.insertCell(4);
+    var cell6  = row.insertCell(5);
+    var cell7  = row.insertCell(6);
+    var cell8  = row.insertCell(7);
+    var cell9  = row.insertCell(8);
+    var cell10 = row.insertCell(9);
+    var cell11 = row.insertCell(10);
+
+    row.className    = '';
+    cell1.className  = 'sia-table-td1';
+    cell2.className  = 'hidden';
+    cell3.className  = 'sia-table-td3';
+    cell4.className  = 'sia-table-td4';
+    cell5.className  = 'sia-table-td5';
+    cell6.className  = 'sia-table-td6';
+    cell7.className  = 'sia-table-td7';
+    cell8.className  = 'sia-table-td8';
+    cell9.className  = 'sia-table-td9';
+    cell10.className = 'sia-table-td10';
+    cell11.className = 'sia-table-td11';
+
+    cell1.innerHTML = obj.Time.toString();
+    cell2.innerHTML = obj.AccountID.toString();
+    cell3.innerHTML = obj.EventCode.toString();
+    cell4.innerHTML = obj.EventName.toString();
+    cell5.innerHTML = obj.ASCII.toString();
+    cell6.innerHTML = obj.EventDesc.toString();
+    cell7.innerHTML = obj.EventAddressType.toString();
+    cell8.innerHTML = obj.EventAddressNumber.toString();
+    cell9.innerHTML = obj.SubscriberID.toString();
+    cell10.innerHTML = obj.AreaID.toString();
+    cell11.innerHTML = obj.PeripheralID.toString();
+  }
+}
+
+var socket_commander;
+var socket_broadcast;
+
+$("ws_url").textContent = get_socket_url();
+
+if (typeof MozWebSocket != "undefined") {
+  socket_broadcast = new MozWebSocket(get_socket_url(), "openGalaxy-broadcast-protocol");
+  socket_commander = new MozWebSocket(get_socket_url(), "openGalaxy-command-protocol");
+} else {
+  socket_broadcast = new WebSocket(get_socket_url(), "openGalaxy-broadcast-protocol");
+  socket_commander = new WebSocket(get_socket_url(), "openGalaxy-command-protocol");
+}
+
+try {
+
+  socket_broadcast.onmessage = function(msg) {
+    // Convert the incoming JSON message string to an object
+    $("json").innerHTML = msg.data;
+    var sia = JSON.parse($("json").innerHTML);
+    //alert(typeof sia + ": " + JSON.stringify(sia));
+    table_prepend(sia);
+  }
+
+  socket_commander.onopen = function() {
+    $$("socket_status_td").backgroundColor = "#40ff40";
+    $("socket_status").innerHTML = "Connection status: OK ";
+    $("command_input").value = "help";
+    send();
+  } 
+
+  socket_commander.onclose = function(){
+    $$("socket_status_td").backgroundColor = "#ff4040";
+    $("socket_status").innerHTML = "Connection status: FAIL!";
+  }
+
+  socket_commander.onmessage = function(msg) {
+    $("json").innerHTML = msg.data;
+    var result = JSON.parse($("json").innerHTML);    
+    switch( result.typeId ){
+
+      case JSON_HELP_REPLY:
+        $("response").innerHTML = result.helpText.toString();
+        break;
+
+      case JSON_STANDARD_REPLY:
+        if(result.success) {
+          $("response").innerHTML = '<span class="response_green">The command was executed successfully.</span>';
+        } else {
+          $("response").innerHTML = '<span class="response_red">Could not execute command: ' + result.command + '<br>' +
+                                    'The errormessage is: ' + result.replyText + '</span>';
+        }
+        break;
+
+      case JSON_AREA_ARMED_STATE:
+        if(result.areaState == 1) {
+          $("response").innerHTML = 'The area is: <span class="response_red">Armed</span>';
+        } 
+        else if (result.areaState == 2) {
+          $("response").innerHTML = 'The area is: <span class="response_orange">Partially Armed</span>';
+        }
+        else {
+          $("response").innerHTML = 'The area is: <span class="response_green">Disarmed</span>';
+        }
+        break;
+
+      case JSON_ALL_AREA_ARMED_STATE:
+        $("response").innerHTML = 
+          '<span>' +
+          '	A1: <span id="A1_armed" class="response_green">Disarmed</span>	B1: <span id="B1_armed" class="response_green">Disarmed</span>	C1: <span id="C1_armed" class="response_green">Disarmed</span>	D1: <span id="D1_armed" class="response_green">Disarmed</span><br>' +
+          '	A2: <span id="A2_armed" class="response_green">Disarmed</span>	B2: <span id="B2_armed" class="response_green">Disarmed</span>	C2: <span id="C2_armed" class="response_green">Disarmed</span>	D2: <span id="D2_armed" class="response_green">Disarmed</span><br>' +
+          '	A3: <span id="A3_armed" class="response_green">Disarmed</span>	B3: <span id="B3_armed" class="response_green">Disarmed</span>	C3: <span id="C3_armed" class="response_green">Disarmed</span>	D3: <span id="D3_armed" class="response_green">Disarmed</span><br>' +
+          '	A4: <span id="A4_armed" class="response_green">Disarmed</span>	B4: <span id="B4_armed" class="response_green">Disarmed</span>	C4: <span id="C4_armed" class="response_green">Disarmed</span>	D4: <span id="D4_armed" class="response_green">Disarmed</span><br>' +
+          '	A5: <span id="A5_armed" class="response_green">Disarmed</span>	B5: <span id="B5_armed" class="response_green">Disarmed</span>	C5: <span id="C5_armed" class="response_green">Disarmed</span>	D5: <span id="D5_armed" class="response_green">Disarmed</span><br>' +
+          '	A6: <span id="A6_armed" class="response_green">Disarmed</span>	B6: <span id="B6_armed" class="response_green">Disarmed</span>	C6: <span id="C6_armed" class="response_green">Disarmed</span>	D6: <span id="D6_armed" class="response_green">Disarmed</span><br>' +
+          '	A7: <span id="A7_armed" class="response_green">Disarmed</span>	B7: <span id="B7_armed" class="response_green">Disarmed</span>	C7: <span id="C7_armed" class="response_green">Disarmed</span>	D7: <span id="D7_armed" class="response_green">Disarmed</span><br>' +
+          '	A8: <span id="A8_armed" class="response_green">Disarmed</span>	B8: <span id="B8_armed" class="response_green">Disarmed</span>	C8: <span id="C8_armed" class="response_green">Disarmed</span>	D8: <span id="D8_armed" class="response_green">Disarmed</span><br>' +
+          '<br>' +
+          '	<span style="font-size:small;">( A1..A8 = area 1..8    B1..B8 = area 9..16    C1..C8 = area 17..24    D1..D8 = area 25..32 )</span>' +
+          '</span>';
+        if(result.areaState.A1 == 1) { $("A1_armed").innerHTML = "Armed"; $("A1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A1 ==2) { $("A1_armed").innerHTML = "Partial"; $("A1_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.A2 == 1) { $("A2_armed").innerHTML = "Armed"; $("A2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A2 ==2) { $("A2_armed").innerHTML = "Partial"; $("A2_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.A3 == 1) { $("A3_armed").innerHTML = "Armed"; $("A3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A3 ==2) { $("A3_armed").innerHTML = "Partial"; $("A3_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.A4 == 1) { $("A4_armed").innerHTML = "Armed"; $("A4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A4 ==2) { $("A4_armed").innerHTML = "Partial"; $("A4_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.A5 == 1) { $("A5_armed").innerHTML = "Armed"; $("A5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A5 ==2) { $("A5_armed").innerHTML = "Partial"; $("A5_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.A6 == 1) { $("A6_armed").innerHTML = "Armed"; $("A6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A6 ==2) { $("A6_armed").innerHTML = "Partial"; $("A6_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.A7 == 1) { $("A7_armed").innerHTML = "Armed"; $("A7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A7 ==2) { $("A7_armed").innerHTML = "Partial"; $("A7_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.A8 == 1) { $("A8_armed").innerHTML = "Armed"; $("A8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A8 ==2) { $("A8_armed").innerHTML = "Partial"; $("A8_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B1 == 1) { $("B1_armed").innerHTML = "Armed"; $("B1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B1 ==2) { $("B1_armed").innerHTML = "Partial"; $("B1_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B2 == 1) { $("B2_armed").innerHTML = "Armed"; $("B2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B2 ==2) { $("B2_armed").innerHTML = "Partial"; $("B2_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B3 == 1) { $("B3_armed").innerHTML = "Armed"; $("B3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B3 ==2) { $("B3_armed").innerHTML = "Partial"; $("B3_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B4 == 1) { $("B4_armed").innerHTML = "Armed"; $("B4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B4 ==2) { $("B4_armed").innerHTML = "Partial"; $("B4_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B5 == 1) { $("B5_armed").innerHTML = "Armed"; $("B5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B5 ==2) { $("B5_armed").innerHTML = "Partial"; $("B5_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B6 == 1) { $("B6_armed").innerHTML = "Armed"; $("B6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B6 ==2) { $("B6_armed").innerHTML = "Partial"; $("B6_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B7 == 1) { $("B7_armed").innerHTML = "Armed"; $("B7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B7 ==2) { $("B7_armed").innerHTML = "Partial"; $("B7_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.B8 == 1) { $("B8_armed").innerHTML = "Armed"; $("B8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B8 ==2) { $("B8_armed").innerHTML = "Partial"; $("B8_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C1 == 1) { $("C1_armed").innerHTML = "Armed"; $("C1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C1 ==2) { $("C1_armed").innerHTML = "Partial"; $("C1_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C2 == 1) { $("C2_armed").innerHTML = "Armed"; $("C2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C2 ==2) { $("C2_armed").innerHTML = "Partial"; $("C2_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C3 == 1) { $("C3_armed").innerHTML = "Armed"; $("C3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C3 ==2) { $("C3_armed").innerHTML = "Partial"; $("C3_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C4 == 1) { $("C4_armed").innerHTML = "Armed"; $("C4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C4 ==2) { $("C4_armed").innerHTML = "Partial"; $("C4_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C5 == 1) { $("C5_armed").innerHTML = "Armed"; $("C5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C5 ==2) { $("C5_armed").innerHTML = "Partial"; $("C5_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C6 == 1) { $("C6_armed").innerHTML = "Armed"; $("C6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C6 ==2) { $("C6_armed").innerHTML = "Partial"; $("C6_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C7 == 1) { $("C7_armed").innerHTML = "Armed"; $("C7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C7 ==2) { $("C7_armed").innerHTML = "Partial"; $("C7_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.C8 == 1) { $("C8_armed").innerHTML = "Armed"; $("C8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C8 ==2) { $("C8_armed").innerHTML = "Partial"; $("C8_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D1 == 1) { $("D1_armed").innerHTML = "Armed"; $("D1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D1 ==2) { $("D1_armed").innerHTML = "Partial"; $("D1_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D2 == 1) { $("D2_armed").innerHTML = "Armed"; $("D2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D2 ==2) { $("D2_armed").innerHTML = "Partial"; $("D2_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D3 == 1) { $("D3_armed").innerHTML = "Armed"; $("D3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D3 ==2) { $("D3_armed").innerHTML = "Partial"; $("D3_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D4 == 1) { $("D4_armed").innerHTML = "Armed"; $("D4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D4 ==2) { $("D4_armed").innerHTML = "Partial"; $("D4_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D5 == 1) { $("D5_armed").innerHTML = "Armed"; $("D5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D5 ==2) { $("D5_armed").innerHTML = "Partial"; $("D5_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D6 == 1) { $("D6_armed").innerHTML = "Armed"; $("D6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D6 ==2) { $("D6_armed").innerHTML = "Partial"; $("D6_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D7 == 1) { $("D7_armed").innerHTML = "Armed"; $("D7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D7 ==2) { $("D7_armed").innerHTML = "Partial"; $("D7_armed").setAttribute("class", "response_orange"); }
+        if(result.areaState.D8 == 1) { $("D8_armed").innerHTML = "Armed"; $("D8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D8 ==2) { $("D8_armed").innerHTML = "Partial"; $("D8_armed").setAttribute("class", "response_orange"); }
+        break;
+
+      case JSON_AREA_ALARM_STATE:
+        if(result.areaState == 1) {
+          $("response").innerHTML = 'The alarm state is: <span class="response_red">Alarm</span>';
+        } 
+        else if (result.areaState == 2) {
+          $("response").innerHTML = 'The alarm state is: <span class="response_orange">Reset Required</span>';
+        }
+        else {
+          $("response").innerHTML = 'The alarm state is: <span class="response_green">Normal</span>';
+        }
+        break;
+
+      case JSON_ALL_AREA_ALARM_STATE:
+        $("response").innerHTML = 
+          '<span>' +
+          '	A1: <span id="A1_ready" class="response_green">Normal</span>	B1: <span id="B1_ready" class="response_green">Normal</span>	C1: <span id="C1_ready" class="response_green">Normal</span>	D1: <span id="D1_ready" class="response_green">Normal</span><br>' +
+          '	A2: <span id="A2_ready" class="response_green">Normal</span>	B2: <span id="B2_ready" class="response_green">Normal</span>	C2: <span id="C2_ready" class="response_green">Normal</span>	D2: <span id="D2_ready" class="response_green">Normal</span><br>' +
+          '	A3: <span id="A3_ready" class="response_green">Normal</span>	B3: <span id="B3_ready" class="response_green">Normal</span>	C3: <span id="C3_ready" class="response_green">Normal</span>	D3: <span id="D3_ready" class="response_green">Normal</span><br>' +
+          '	A4: <span id="A4_ready" class="response_green">Normal</span>	B4: <span id="B4_ready" class="response_green">Normal</span>	C4: <span id="C4_ready" class="response_green">Normal</span>	D4: <span id="D4_ready" class="response_green">Normal</span><br>' +
+          '	A5: <span id="A5_ready" class="response_green">Normal</span>	B5: <span id="B5_ready" class="response_green">Normal</span>	C5: <span id="C5_ready" class="response_green">Normal</span>	D5: <span id="D5_ready" class="response_green">Normal</span><br>' +
+          '	A6: <span id="A6_ready" class="response_green">Normal</span>	B6: <span id="B6_ready" class="response_green">Normal</span>	C6: <span id="C6_ready" class="response_green">Normal</span>	D6: <span id="D6_ready" class="response_green">Normal</span><br>' +
+          '	A7: <span id="A7_ready" class="response_green">Normal</span>	B7: <span id="B7_ready" class="response_green">Normal</span>	C7: <span id="C7_ready" class="response_green">Normal</span>	D7: <span id="D7_ready" class="response_green">Normal</span><br>' +
+          '	A8: <span id="A8_ready" class="response_green">Normal</span>	B8: <span id="B8_ready" class="response_green">Normal</span>	C8: <span id="C8_ready" class="response_green">Normal</span>	D8: <span id="D8_ready" class="response_green">Normal</span><br>' +
+          '<br>' +
+          '	<span style="font-size:small;">( A1..A8 = area 1..8    B1..B8 = area 9..16    C1..C8 = area 17..24    D1..D8 = area 25..32 )</span>' +
+          '</span>';
+        if(result.areaState.A1 == 1) { $("A1_ready").innerHTML = "Alarm"; $("A1_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A1 ==2) { $("A1_ready").innerHTML = "Reset Req."; $("A1_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.A2 == 1) { $("A2_ready").innerHTML = "Alarm"; $("A2_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A2 ==2) { $("A2_ready").innerHTML = "Reset Req."; $("A2_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.A3 == 1) { $("A3_ready").innerHTML = "Alarm"; $("A3_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A3 ==2) { $("A3_ready").innerHTML = "Reset Req."; $("A3_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.A4 == 1) { $("A4_ready").innerHTML = "Alarm"; $("A4_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A4 ==2) { $("A4_ready").innerHTML = "Reset Req."; $("A4_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.A5 == 1) { $("A5_ready").innerHTML = "Alarm"; $("A5_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A5 ==2) { $("A5_ready").innerHTML = "Reset Req."; $("A5_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.A6 == 1) { $("A6_ready").innerHTML = "Alarm"; $("A6_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A6 ==2) { $("A6_ready").innerHTML = "Reset Req."; $("A6_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.A7 == 1) { $("A7_ready").innerHTML = "Alarm"; $("A7_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A7 ==2) { $("A7_ready").innerHTML = "Reset Req."; $("A7_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.A8 == 1) { $("A8_ready").innerHTML = "Alarm"; $("A8_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.A8 ==2) { $("A8_ready").innerHTML = "Reset Req."; $("A8_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B1 == 1) { $("B1_ready").innerHTML = "Alarm"; $("B1_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B1 ==2) { $("B1_ready").innerHTML = "Reset Req."; $("B1_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B2 == 1) { $("B2_ready").innerHTML = "Alarm"; $("B2_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B2 ==2) { $("B2_ready").innerHTML = "Reset Req."; $("B2_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B3 == 1) { $("B3_ready").innerHTML = "Alarm"; $("B3_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B3 ==2) { $("B3_ready").innerHTML = "Reset Req."; $("B3_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B4 == 1) { $("B4_ready").innerHTML = "Alarm"; $("B4_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B4 ==2) { $("B4_ready").innerHTML = "Reset Req."; $("B4_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B5 == 1) { $("B5_ready").innerHTML = "Alarm"; $("B5_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B5 ==2) { $("B5_ready").innerHTML = "Reset Req."; $("B5_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B6 == 1) { $("B6_ready").innerHTML = "Alarm"; $("B6_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B6 ==2) { $("B6_ready").innerHTML = "Reset Req."; $("B6_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B7 == 1) { $("B7_ready").innerHTML = "Alarm"; $("B7_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B7 ==2) { $("B7_ready").innerHTML = "Reset Req."; $("B7_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.B8 == 1) { $("B8_ready").innerHTML = "Alarm"; $("B8_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.B8 ==2) { $("B8_ready").innerHTML = "Reset Req."; $("B8_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C1 == 1) { $("C1_ready").innerHTML = "Alarm"; $("C1_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C1 ==2) { $("C1_ready").innerHTML = "Reset Req."; $("C1_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C2 == 1) { $("C2_ready").innerHTML = "Alarm"; $("C2_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C2 ==2) { $("C2_ready").innerHTML = "Reset Req."; $("C2_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C3 == 1) { $("C3_ready").innerHTML = "Alarm"; $("C3_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C3 ==2) { $("C3_ready").innerHTML = "Reset Req."; $("C3_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C4 == 1) { $("C4_ready").innerHTML = "Alarm"; $("C4_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C4 ==2) { $("C4_ready").innerHTML = "Reset Req."; $("C4_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C5 == 1) { $("C5_ready").innerHTML = "Alarm"; $("C5_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C5 ==2) { $("C5_ready").innerHTML = "Reset Req."; $("C5_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C6 == 1) { $("C6_ready").innerHTML = "Alarm"; $("C6_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C6 ==2) { $("C6_ready").innerHTML = "Reset Req."; $("C6_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C7 == 1) { $("C7_ready").innerHTML = "Alarm"; $("C7_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C7 ==2) { $("C7_ready").innerHTML = "Reset Req."; $("C7_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.C8 == 1) { $("C8_ready").innerHTML = "Alarm"; $("C8_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.C8 ==2) { $("C8_ready").innerHTML = "Reset Req."; $("C8_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D1 == 1) { $("D1_ready").innerHTML = "Alarm"; $("D1_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D1 ==2) { $("D1_ready").innerHTML = "Reset Req."; $("D1_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D2 == 1) { $("D2_ready").innerHTML = "Alarm"; $("D2_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D2 ==2) { $("D2_ready").innerHTML = "Reset Req."; $("D2_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D3 == 1) { $("D3_ready").innerHTML = "Alarm"; $("D3_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D3 ==2) { $("D3_ready").innerHTML = "Reset Req."; $("D3_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D4 == 1) { $("D4_ready").innerHTML = "Alarm"; $("D4_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D4 ==2) { $("D4_ready").innerHTML = "Reset Req."; $("D4_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D5 == 1) { $("D5_ready").innerHTML = "Alarm"; $("D5_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D5 ==2) { $("D5_ready").innerHTML = "Reset Req."; $("D5_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D6 == 1) { $("D6_ready").innerHTML = "Alarm"; $("D6_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D6 ==2) { $("D6_ready").innerHTML = "Reset Req."; $("D6_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D7 == 1) { $("D7_ready").innerHTML = "Alarm"; $("D7_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D7 ==2) { $("D7_ready").innerHTML = "Reset Req."; $("D7_ready").setAttribute("class", "response_orange"); }
+        if(result.areaState.D8 == 1) { $("D8_ready").innerHTML = "Alarm"; $("D8_ready").setAttribute("class", "response_red"); }
+        else if(result.areaState.D8 ==2) { $("D8_ready").innerHTML = "Reset Req."; $("D8_ready").setAttribute("class", "response_orange"); }
+        break;
+
+      case JSON_AREA_READY_STATE:
+        if(result.areaState == 1) {
+          $("response").innerHTML = 'The area is: <span class="response_red">Armed</span>';
+        } 
+        else if (result.areaState == 2) {
+          $("response").innerHTML = 'The area is: <span class="response_orange">Partially Armed</span>';
+        }
+        else if (result.areaState == 3) {
+          $("response").innerHTML = 'The area is: <span class="response_green">Ready to be armed</span>';
+        }
+        else if (result.areaState == 4) {
+          $("response").innerHTML = 'The area is: <span class="response_blue">Time Locked</span>';
+        }
+        else {
+          $("response").innerHTML = 'The area is: <span class="response_green">Disarmed</span>';
+        }
+        break;
+
+      case JSON_ALL_AREA_READY_STATE:
+        $("response").innerHTML = 
+          '<span>' +
+          '	A1: <span id="A1_armed" class="response_green">Disarmed</span>	B1: <span id="B1_armed" class="response_green">Disarmed</span>	C1: <span id="C1_armed" class="response_green">Disarmed</span>	D1: <span id="D1_armed" class="response_green">Disarmed</span><br>' +
+          '	A2: <span id="A2_armed" class="response_green">Disarmed</span>	B2: <span id="B2_armed" class="response_green">Disarmed</span>	C2: <span id="C2_armed" class="response_green">Disarmed</span>	D2: <span id="D2_armed" class="response_green">Disarmed</span><br>' +
+          '	A3: <span id="A3_armed" class="response_green">Disarmed</span>	B3: <span id="B3_armed" class="response_green">Disarmed</span>	C3: <span id="C3_armed" class="response_green">Disarmed</span>	D3: <span id="D3_armed" class="response_green">Disarmed</span><br>' +
+          '	A4: <span id="A4_armed" class="response_green">Disarmed</span>	B4: <span id="B4_armed" class="response_green">Disarmed</span>	C4: <span id="C4_armed" class="response_green">Disarmed</span>	D4: <span id="D4_armed" class="response_green">Disarmed</span><br>' +
+          '	A5: <span id="A5_armed" class="response_green">Disarmed</span>	B5: <span id="B5_armed" class="response_green">Disarmed</span>	C5: <span id="C5_armed" class="response_green">Disarmed</span>	D5: <span id="D5_armed" class="response_green">Disarmed</span><br>' +
+          '	A6: <span id="A6_armed" class="response_green">Disarmed</span>	B6: <span id="B6_armed" class="response_green">Disarmed</span>	C6: <span id="C6_armed" class="response_green">Disarmed</span>	D6: <span id="D6_armed" class="response_green">Disarmed</span><br>' +
+          '	A7: <span id="A7_armed" class="response_green">Disarmed</span>	B7: <span id="B7_armed" class="response_green">Disarmed</span>	C7: <span id="C7_armed" class="response_green">Disarmed</span>	D7: <span id="D7_armed" class="response_green">Disarmed</span><br>' +
+          '	A8: <span id="A8_armed" class="response_green">Disarmed</span>	B8: <span id="B8_armed" class="response_green">Disarmed</span>	C8: <span id="C8_armed" class="response_green">Disarmed</span>	D8: <span id="D8_armed" class="response_green">Disarmed</span><br>' +
+          '<br>' +
+          '	<span style="font-size:small;">( A1..A8 = area 1..8    B1..B8 = area 9..16    C1..C8 = area 17..24    D1..D8 = area 25..32 )</span>' +
+          '</span>';
+        if(result.areaState.A1 == 1) { $("A1_armed").innerHTML = "Armed"; $("A1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A1 ==2) { $("A1_armed").innerHTML = "Partial"; $("A1_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A1 ==3) { $("A1_armed").innerHTML = "Ready"; $("A1_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A1 ==4) { $("A1_armed").innerHTML = "Lockout"; $("A1_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.A2 == 1) { $("A2_armed").innerHTML = "Armed"; $("A2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A2 ==2) { $("A2_armed").innerHTML = "Partial"; $("A2_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A2 ==3) { $("A2_armed").innerHTML = "Ready"; $("A2_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A2 ==4) { $("A2_armed").innerHTML = "Lockout"; $("A2_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.A3 == 1) { $("A3_armed").innerHTML = "Armed"; $("A3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A3 ==2) { $("A3_armed").innerHTML = "Partial"; $("A3_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A3 ==3) { $("A3_armed").innerHTML = "Ready"; $("A3_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A3 ==4) { $("A3_armed").innerHTML = "Lockout"; $("A3_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.A4 == 1) { $("A4_armed").innerHTML = "Armed"; $("A4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A4 ==2) { $("A4_armed").innerHTML = "Partial"; $("A4_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A4 ==3) { $("A4_armed").innerHTML = "Ready"; $("A4_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A4 ==4) { $("A4_armed").innerHTML = "Lockout"; $("A4_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.A5 == 1) { $("A5_armed").innerHTML = "Armed"; $("A5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A5 ==2) { $("A5_armed").innerHTML = "Partial"; $("A5_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A5 ==3) { $("A5_armed").innerHTML = "Ready"; $("A5_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A5 ==4) { $("A5_armed").innerHTML = "Lockout"; $("A5_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.A6 == 1) { $("A6_armed").innerHTML = "Armed"; $("A6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A6 ==2) { $("A6_armed").innerHTML = "Partial"; $("A6_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A6 ==3) { $("A6_armed").innerHTML = "Ready"; $("A6_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A6 ==4) { $("A6_armed").innerHTML = "Lockout"; $("A6_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.A7 == 1) { $("A7_armed").innerHTML = "Armed"; $("A7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A7 ==2) { $("A7_armed").innerHTML = "Partial"; $("A7_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A7 ==3) { $("A7_armed").innerHTML = "Ready"; $("A7_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A7 ==4) { $("A7_armed").innerHTML = "Lockout"; $("A7_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.A8 == 1) { $("A8_armed").innerHTML = "Armed"; $("A8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.A8 ==2) { $("A8_armed").innerHTML = "Partial"; $("A8_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.A8 ==3) { $("A8_armed").innerHTML = "Ready"; $("A8_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.A8 ==4) { $("A8_armed").innerHTML = "Lockout"; $("A8_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B1 == 1) { $("B1_armed").innerHTML = "Armed"; $("B1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B1 ==2) { $("B1_armed").innerHTML = "Partial"; $("B1_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B1 ==3) { $("B1_armed").innerHTML = "Ready"; $("B1_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B1 ==4) { $("B1_armed").innerHTML = "Lockout"; $("B1_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B2 == 1) { $("B2_armed").innerHTML = "Armed"; $("B2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B2 ==2) { $("B2_armed").innerHTML = "Partial"; $("B2_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B2 ==3) { $("B2_armed").innerHTML = "Ready"; $("B2_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B2 ==4) { $("B2_armed").innerHTML = "Lockout"; $("B2_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B3 == 1) { $("B3_armed").innerHTML = "Armed"; $("B3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B3 ==2) { $("B3_armed").innerHTML = "Partial"; $("B3_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B3 ==3) { $("B3_armed").innerHTML = "Ready"; $("B3_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B3 ==4) { $("B3_armed").innerHTML = "Lockout"; $("B3_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B4 == 1) { $("B4_armed").innerHTML = "Armed"; $("B4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B4 ==2) { $("B4_armed").innerHTML = "Partial"; $("B4_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B4 ==3) { $("B4_armed").innerHTML = "Ready"; $("B4_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B4 ==4) { $("B4_armed").innerHTML = "Lockout"; $("B4_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B5 == 1) { $("B5_armed").innerHTML = "Armed"; $("B5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B5 ==2) { $("B5_armed").innerHTML = "Partial"; $("B5_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B5 ==3) { $("B5_armed").innerHTML = "Ready"; $("B5_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B5 ==4) { $("B5_armed").innerHTML = "Lockout"; $("B5_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B6 == 1) { $("B6_armed").innerHTML = "Armed"; $("B6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B6 ==2) { $("B6_armed").innerHTML = "Partial"; $("B6_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B6 ==3) { $("B6_armed").innerHTML = "Ready"; $("B6_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B6 ==4) { $("B6_armed").innerHTML = "Lockout"; $("B6_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B7 == 1) { $("B7_armed").innerHTML = "Armed"; $("B7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B7 ==2) { $("B7_armed").innerHTML = "Partial"; $("B7_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B7 ==3) { $("B7_armed").innerHTML = "Ready"; $("B7_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B7 ==4) { $("B7_armed").innerHTML = "Lockout"; $("B7_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.B8 == 1) { $("B8_armed").innerHTML = "Armed"; $("B8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.B8 ==2) { $("B8_armed").innerHTML = "Partial"; $("B8_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.B8 ==3) { $("B8_armed").innerHTML = "Ready"; $("B8_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.B8 ==4) { $("B8_armed").innerHTML = "Lockout"; $("B8_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C1 == 1) { $("C1_armed").innerHTML = "Armed"; $("C1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C1 ==2) { $("C1_armed").innerHTML = "Partial"; $("C1_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C1 ==3) { $("C1_armed").innerHTML = "Ready"; $("C1_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C1 ==4) { $("C1_armed").innerHTML = "Lockout"; $("C1_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C2 == 1) { $("C2_armed").innerHTML = "Armed"; $("C2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C2 ==2) { $("C2_armed").innerHTML = "Partial"; $("C2_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C2 ==3) { $("C2_armed").innerHTML = "Ready"; $("C2_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C2 ==4) { $("C2_armed").innerHTML = "Lockout"; $("C2_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C3 == 1) { $("C3_armed").innerHTML = "Armed"; $("C3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C3 ==2) { $("C3_armed").innerHTML = "Partial"; $("C3_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C3 ==3) { $("C3_armed").innerHTML = "Ready"; $("C3_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C3 ==4) { $("C3_armed").innerHTML = "Lockout"; $("C3_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C4 == 1) { $("C4_armed").innerHTML = "Armed"; $("C4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C4 ==2) { $("C4_armed").innerHTML = "Partial"; $("C4_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C4 ==3) { $("C4_armed").innerHTML = "Ready"; $("C4_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C4 ==4) { $("C4_armed").innerHTML = "Lockout"; $("C4_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C5 == 1) { $("C5_armed").innerHTML = "Armed"; $("C5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C5 ==2) { $("C5_armed").innerHTML = "Partial"; $("C5_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C5 ==3) { $("C5_armed").innerHTML = "Ready"; $("C5_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C5 ==4) { $("C5_armed").innerHTML = "Lockout"; $("C5_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C6 == 1) { $("C6_armed").innerHTML = "Armed"; $("C6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C6 ==2) { $("C6_armed").innerHTML = "Partial"; $("C6_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C6 ==3) { $("C6_armed").innerHTML = "Ready"; $("C6_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C6 ==4) { $("C6_armed").innerHTML = "Lockout"; $("C6_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C7 == 1) { $("C7_armed").innerHTML = "Armed"; $("C7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C7 ==2) { $("C7_armed").innerHTML = "Partial"; $("C7_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C7 ==3) { $("C7_armed").innerHTML = "Ready"; $("C7_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C7 ==4) { $("C7_armed").innerHTML = "Lockout"; $("C7_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.C8 == 1) { $("C8_armed").innerHTML = "Armed"; $("C8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.C8 ==2) { $("C8_armed").innerHTML = "Partial"; $("C8_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.C8 ==3) { $("C8_armed").innerHTML = "Ready"; $("C8_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.C8 ==4) { $("C8_armed").innerHTML = "Lockout"; $("C8_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D1 == 1) { $("D1_armed").innerHTML = "Armed"; $("D1_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D1 ==2) { $("D1_armed").innerHTML = "Partial"; $("D1_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D1 ==3) { $("D1_armed").innerHTML = "Ready"; $("D1_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D1 ==4) { $("D1_armed").innerHTML = "Lockout"; $("D1_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D2 == 1) { $("D2_armed").innerHTML = "Armed"; $("D2_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D2 ==2) { $("D2_armed").innerHTML = "Partial"; $("D2_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D2 ==3) { $("D2_armed").innerHTML = "Ready"; $("D2_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D2 ==4) { $("D2_armed").innerHTML = "Lockout"; $("D2_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D3 == 1) { $("D3_armed").innerHTML = "Armed"; $("D3_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D3 ==2) { $("D3_armed").innerHTML = "Partial"; $("D3_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D3 ==3) { $("D3_armed").innerHTML = "Ready"; $("D3_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D3 ==4) { $("D3_armed").innerHTML = "Lockout"; $("D3_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D4 == 1) { $("D4_armed").innerHTML = "Armed"; $("D4_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D4 ==2) { $("D4_armed").innerHTML = "Partial"; $("D4_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D4 ==3) { $("D4_armed").innerHTML = "Ready"; $("D4_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D4 ==4) { $("D4_armed").innerHTML = "Lockout"; $("D4_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D5 == 1) { $("D5_armed").innerHTML = "Armed"; $("D5_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D5 ==2) { $("D5_armed").innerHTML = "Partial"; $("D5_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D5 ==3) { $("D5_armed").innerHTML = "Ready"; $("D5_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D5 ==4) { $("D5_armed").innerHTML = "Lockout"; $("D5_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D6 == 1) { $("D6_armed").innerHTML = "Armed"; $("D6_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D6 ==2) { $("D6_armed").innerHTML = "Partial"; $("D6_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D6 ==3) { $("D6_armed").innerHTML = "Ready"; $("D6_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D6 ==4) { $("D6_armed").innerHTML = "Lockout"; $("D6_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D7 == 1) { $("D7_armed").innerHTML = "Armed"; $("D7_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D7 ==2) { $("D7_armed").innerHTML = "Partial"; $("D7_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D7 ==3) { $("D7_armed").innerHTML = "Ready"; $("D7_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D7 ==4) { $("D7_armed").innerHTML = "Lockout"; $("D7_armed").setAttribute("class", "response_blue"); }
+        if(result.areaState.D8 == 1) { $("D8_armed").innerHTML = "Armed"; $("D8_armed").setAttribute("class", "response_red"); }
+        else if(result.areaState.D8 ==2) { $("D8_armed").innerHTML = "Partial"; $("D8_armed").setAttribute("class", "response_orange"); }
+        else if(result.areaState.D8 ==3) { $("D8_armed").innerHTML = "Ready"; $("D8_armed").setAttribute("class", "response_green"); }
+        else if(result.areaState.D8 ==4) { $("D8_armed").innerHTML = "Lockout"; $("D8_armed").setAttribute("class", "response_blue"); }
+        break;
+
+      case JSON_ZONE_OMIT_STATE:
+        if(result.omitState == 1) {
+          $("response").innerHTML = 'The zone is: <span class="response_blue">Bypassed</span>';
+        } 
+        else {
+          $("response").innerHTML = 'The zone is: <span class="response_green">Not bypassed</span>';
+        }
+        break;
+
+      case JSON_ZONE_STATE:
+        if(result.zoneState == 0) {
+          $("response").innerHTML = 'The zone state is: <span class="response_red">Tamper S/C</span>';
+        } 
+        else if (result.zoneState == 1) {
+          $("response").innerHTML = 'The zone state is: <span class="response_orange">Low Resistance</span>';
+        }
+        else if (result.zoneState == 2) {
+          $("response").innerHTML = 'The zone state is: <span class="response_green">Closed</span>';
+        }
+        else if (result.zoneState == 3) {
+          $("response").innerHTML = 'The zone state is: <span class="response_orange">High Resistance</span>';
+        }
+        else if (result.zoneState == 4) {
+          $("response").innerHTML = 'The zone state is: <span class="response_green">Open</span>';
+        }
+        else if (result.zoneState == 5) {
+          $("response").innerHTML = 'The zone state is: <span class="response_red">Tamper O/C</span>';
+        }
+        else if (result.zoneState == 6) {
+          $("response").innerHTML = 'The zone state is: <span class="response_blue">Masked</span>';
+        }
+        else if (result.zoneState == 7) {
+          $("response").innerHTML = 'The zone state is: <span class="response_red">Tamper CV</span>';
+        }
+        else {
+          $("response").innerHTML = 'The zone state is: <span class="response_blue">Fault</span>';
+        }
+        break;
+
+      // TODO: Make these look pretty too
+      case JSON_ALL_ZONE_READY_STATE:
+      case JSON_ALL_ZONE_ALARM_STATE:
+      case JSON_ALL_ZONE_OPEN_STATE:
+      case JSON_ALL_ZONE_TAMPER_STATE:
+      case JSON_ALL_ZONE_R_STATE:
+      case JSON_ALL_ZONE_OMIT_STATE:
+      case JSON_ALL_OUTPUT_STATE:
+        $("response").innerHTML = 
+          '<span class="response_blue">TODO: Make this look pretty...</span><br><br>' +
+          JSON.stringify(result);
+        break;
+
+      default:
+        $("response").innerHTML = JSON.stringify(result);
+        alert("Unknown reply: "+result.typeId.toString()+" ("+result.typeDesc.toString()+")");
+        break;
+    }
+  } 
+} 
+catch(exception) {
+  alert('<p>Error' + exception);  
+}
+
+</script>
+</body>
+</html>
+

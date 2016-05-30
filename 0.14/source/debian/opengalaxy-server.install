@@ -1,0 +1,5 @@
+usr/bin/opengalaxy
+usr/share/man/man8/opengalaxy.8
+usr/share/man/man5/galaxy.conf.5
+var/log/galaxy
+

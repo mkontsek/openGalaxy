@@ -1,0 +1,15 @@
+.TH OPENGALAXY-CA 8 2016-3-31
+.SH NAME
+opengalaxy-ca \- Create and manage SSL certificates for use with openGalaxy.
+.SH SYNOPSIS
+.B opengalaxy-ca
+.SH DESCRIPTION
+\fBopengalaxy-ca\fR is a GUI application that can be used to create, modify or invalidate all of the nessesary SSL certificates needed by openGalaxy's server, client and webinterface.
+.PP
+.B Please read the document
+.B /usr/share/doc/galaxy/openGalaxy_Certificate_Manager.pdf
+.SH "SEE ALSO"
+.BR galaxy.conf (5),
+.BR opengalaxy (8),
+.BR opengalaxy-client (1),
+

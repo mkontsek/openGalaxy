@@ -1,0 +1,27 @@
+#!/bin/sh
+# postinst script for opengalaxy-certificates-manager
+
+set -e
+
+case "$1" in
+    configure)
+
+    # Only root and members of group 'staff' may access the passphrase.txt file
+    chown root:staff /usr/share/galaxy/passphrase.txt
+    chmod u-sx,u+rw,g+rw,g-sx,o-rxw /usr/share/galaxy/passphrase.txt
+
+    if test -x /usr/bin/update-menus; then update-menus; fi
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

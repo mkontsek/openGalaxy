@@ -1,0 +1,4 @@
+?package(opengalaxy-client):\
+  needs="X11"\
+  section="Applications/System/Security"\
+  title="openGalaxy (client)" command="/usr/bin/opengalaxy-client"

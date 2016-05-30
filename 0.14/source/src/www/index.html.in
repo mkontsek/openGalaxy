@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="en-us">
+<!--
+  This file is part of openGalaxy.
+
+  opengalaxy - a SIA receiver for Galaxy security control panels.
+  Copyright (C) 2015 - 2016 Alexander Bruines <alexander.bruines@gmail.com>
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License version 2 as
+  as published by the Free Software Foundation, or (at your option)
+  any later version.
+
+  In addition, as a special exception, the author of this program
+  gives permission to link the code of its release with the OpenSSL
+  project's "OpenSSL" library (or with modified versions of it that
+  use the same license as the "OpenSSL" library), and distribute the
+  linked executables. You must obey the GNU General Public License
+  in all respects for all of the code used other than "OpenSSL".
+  If you modify this file, you may extend this exception to your
+  version of the file, but you are not obligated to do so.
+  If you do not wish to do so, delete this exception statement
+  from your version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<head>
+<meta charset=utf-8 http-equiv="Content-Language" content="en-us"/>
+
+<link href="/opengalaxy.css?V=@PACKAGE_VERSION@" rel="stylesheet">
+<link href="/external/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico">
+
+<title>openGalaxy v@PACKAGE_VERSION@</title>
+
+</head>
+<body id="mainbody" onresize="resize_me()">
+
+<div id="Desktop">
+ <div id="Toolbox">
+
+  <h3 id="anchorAreas">Areas</h3>
+  <div id="tabsAreas">
+   <ul>
+    <li><a href="#tabsAreas-1">Arm / Disarm</a></li>
+    <li id="anchorStatusArea"><a href="#tabsAreas-2">Status</a></li>
+   </ul>
+   <div id="tabsAreas-1">
+    <ol id="selectableAreas">
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 1">A1</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 2">A2</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 3">A3</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 4">A4</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 5">A5</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 6">A6</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 7">A7</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 8">A8</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 9">B1</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 10">B2</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 11">B3</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 12">B4</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 13">B5</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 14">B6</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 15">B7</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 16">B8</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 17">C1</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 18">C2</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 19">C3</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 20">C4</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 21">C5</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 22">C6</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 23">C7</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 24">C8</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 25">D1</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 26">D2</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 27">D3</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 28">D4</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 29">D5</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 30">D6</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 31">D7</li>
+     <li class="selectableArea ui-state-default cursor_menu" title="Area 32">D8</li>
+    </ol>
+    <ol id="areaButtons" class="nobr">
+     <li id="buttonArm" title="Arm the selected area(s)">Arm</li>
+     <li id="buttonDisarm" title="Disarm the selected area(s)">Disarm</li>
+     <li id="buttonPartial" title="Partialy arm the selected area(s)">Partial</li>
+     <li id="buttonForce" title="Force arming the selected area(s)">Force</li>
+     <li id="buttonAbort" title="Abort arming the selected area(s)">Abort</li>
+     <li id="buttonReset" title="Reset the selected area(s)">Reset</li>
+    </ol>
+    <div id="areaHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span>
+       <strong>Info:</strong><br><br>Select an area by clicking on it, then click on an area action.<br>To select multiple areas draw a rectangle,<br>or click on them while holding down the &lt;control&gt; key.
+      </p>
+     </div>
+    </div>
+   </div><!--#tabsAreas-1-->
+   <div id="tabsAreas-2">
+    <ol id="statusAreas">
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 1">A1</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 2">A2</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 3">A3</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 4">A4</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 5">A5</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 6">A6</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 7">A7</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 8">A8</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 9">B1</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 10">B2</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 11">B3</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 12">B4</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 13">B5</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 14">B6</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 15">B7</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 16">B8</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 17">C1</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 18">C2</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 19">C3</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 20">C4</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 21">C5</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 22">C6</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 23">C7</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 24">C8</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 25">D1</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 26">D2</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 27">D3</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 28">D4</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 29">D5</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 30">D6</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 31">D7</li>
+     <li class="statusArea ui-state-default cursor_nomenu" title="Area 32">D8</li>
+    </ol>
+    <ol id="areaStateButtons" class="nobr">
+     <li id="buttonState" title="Get the armed status of all areas">Armed state</li>
+     <li id="buttonReady" title="Get the ready status of all areas">Ready state</li>
+     <li id="buttonAlarm" title="Get the alarm status of all areas">Alarm state</li>
+    </ol>
+    <div id="areaStateHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span>
+       <strong>Info:</strong><br>Click on a state button and the areas on the left will show the states in color.
+      </p>
+      <table class="small">
+       <tr><td><strong>Armed state:</strong></td><td><span class="blue">Disarmed</span></td><td>/</td><td><span class="red">Armed</span></td><td>/</td><td><span class="violet">Partially Armed</span></td></tr>
+       <tr><td><strong>Ready state:</strong></td><td><span class="blue">Disarmed</span></td><td>/</td><td><span class="red">Armed</span></td><td>/</td><td><span class="violet">Partially Armed</span> / <span class="green">Ready to arm</span> / <span class="orange">Time locked</span></td></tr>
+       <tr><td><strong>Alarm state:</strong></td><td><span class="green">Normal</span></td><td>/</td><td><span class="red">Alarm</span></td><td>/</td><td><span class="blue">Reset required</span></td></tr>
+      </table>
+     </div>
+    </div><!--#areaStateHelp-->
+   </div><!--#tabsAreas-2-->
+  </div><!--#tabsAreas-->
+
+  <h3 id="anchorZones">Zones</h3>
+  <div id="tabsZones">
+   <ul>
+    <li><a href="#tabsZones-1">Omit</a></li>
+    <li id="anchorStatusZones"><a href="#tabsZones-2">Status</a></li>
+    <li id="anchorParametersZones"><a href="#tabsZones-3">Parameters</a></li>
+    <li id="anchorProgramZones"><a href="#tabsZones-4">Program</a></li>
+   </ul>
+   <div id="tabsZones-1">
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header omitZonesFieldset omitStart">
+     <center><span class="omitZonesLabelSpan small">First zone</span></center>
+     <ol class="omitZonesOl nobr">
+      <li>
+       <select name="omitBusStart" id="omitBusStart" class="omitZonesSelect">
+        <option selected="selected" value="1000">1</option><option value="2000">2</option><option value="3000">3</option><option value="4000">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="omitRioStart" id="omitRioStart" class="omitZonesSelect">
+        <option selected="selected" value="0">00</option><option value="10">01</option><option value="20">02</option><option value="30">03</option><option value="40">04</option><option value="50">05</option><option value="60">06</option><option value="70">07</option><option value="80">08</option><option value="90">09</option><option value="100">10</option><option value="110">11</option><option value="120">12</option><option value="130">13</option><option value="140">14</option><option value="150">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="omitZoneStart" id="omitZoneStart" class="omitZonesSelect">
+        <option selected="selected" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header omitZonesFieldset omitEnd">
+     <center><span class="omitZonesLabelSpan small">Last zone</span></center>
+     <ol class="omitZonesOl nobr">
+      <li>
+       <select name="omitBusEnd" id="omitBusEnd" class="omitZonesSelect">
+        <option selected="selected" value="1000">1</option><option value="2000">2</option><option value="3000">3</option><option value="4000">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="omitRioEnd" id="omitRioEnd" class="omitZonesSelect">
+        <option selected="selected" value="0">00</option><option value="10">01</option><option value="20">02</option><option value="30">03</option><option value="40">04</option><option value="50">05</option><option value="60">06</option><option value="70">07</option><option value="80">08</option><option value="90">09</option><option value="100">10</option><option value="110">11</option><option value="120">12</option><option value="130">13</option><option value="140">14</option><option value="150">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="omitZoneEnd" id="omitZoneEnd" class="omitZonesSelect">
+        <option selected="selected" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header omitZonesFieldset omitType">
+     <center><span class="omitZonesLabelSpan small">By type</span></center>
+     <ol class="omitZonesOl nobr">
+      <li>
+       <select name="omitByType" id="omitByType" class="omitZonesSelectByType">
+        <option selected="selected" value="FINAL"><span>01</span>&nbsp;&nbsp;<span>Final</span></option>
+        <option value="EXIT"><span>02</span>&nbsp;&nbsp;<span>Exit</span></option>
+        <option value="INTRUDER"><span>03</span>&nbsp;&nbsp;<span>Intruder</span></option>
+        <option value="24-HOURS"><span>04</span>&nbsp;&nbsp;<span>24 Hours</span></option>
+        <option value="SECURITY"><span>05</span>&nbsp;&nbsp;<span>Security</span></option>
+        <option value="DUAL"><span>06</span>&nbsp;&nbsp;<span>Dual</span></option>
+        <option value="ENTRY"><span>07</span>&nbsp;&nbsp;<span>Entry</span></option>
+        <option value="PUSH-SET"><span>08</span>&nbsp;&nbsp;<span>Push Set</span></option>
+        <option value="KEYSWITCH"><span>09</span>&nbsp;&nbsp;<span>Keyswitch</span></option>
+        <option value="SECURE-FINAL"><span>10</span>&nbsp;&nbsp;<span>Secure Final</span></option>
+        <option value="PART-FINAL"><span>11</span>&nbsp;&nbsp;<span>Part Final</span></option>
+        <option value="PART-ENTRY"><span>12</span>&nbsp;&nbsp;<span>Part Entry</span></option>
+        <option value="PA"><span>13</span>&nbsp;&nbsp;<span>PA</span></option>
+        <option value="PA-SILENT"><span>14</span>&nbsp;&nbsp;<span>PA Silent</span></option>
+        <option value="PA-DELAY"><span>15</span>&nbsp;&nbsp;<span>PA Delay</span></option>
+        <option value="PA-DELAY-SILENT"><span>16</span>&nbsp;&nbsp;<span>PA Delay Silent</span></option>
+        <option value="LINK"><span>17</span>&nbsp;&nbsp;<span>Link</span></option>
+        <option value="SPARE"><span>18</span>&nbsp;&nbsp;<span>Spare</span></option>
+        <option value="FIRE"><span>19</span>&nbsp;&nbsp;<span>Fire</span></option>
+        <option value="TAMPER"><span>20</span>&nbsp;&nbsp;<span>Tamper</span></option>
+        <option value="BELL-TAMPER"><span>21</span>&nbsp;&nbsp;<span>Bell Tamper</span></option>
+        <option value="BEAM-PAIR"><span>22</span>&nbsp;&nbsp;<span>Beam Pair</span></option>
+        <option value="BATTERY-LOW"><span>23</span>&nbsp;&nbsp;<span>Battery Low</span></option>
+        <option value="LINE-FAIL"><span>24</span>&nbsp;&nbsp;<span>Line Fail</span></option>
+        <option value="AC-FAIL"><span>25</span>&nbsp;&nbsp;<span>AC Fail</span></option>
+        <option value="LOG"><span>26</span>&nbsp;&nbsp;<span>Log</span></option>
+        <option value="REMOTE-ACCESS"><span>27</span>&nbsp;&nbsp;<span>Remote Access</span></option>
+        <option value="VIDEO"><span>28</span>&nbsp;&nbsp;<span>Video</span></option>
+        <option value="VIDEO-EXIT"><span>29</span>&nbsp;&nbsp;<span>Video Exit</span></option>
+        <option value="INTRUDER-DELAY"><span>30</span>&nbsp;&nbsp;<span>Intruder Delay</span></option>
+        <option value="LOG-DELAY"><span>31</span>&nbsp;&nbsp;<span>Log Delay</span></option>
+        <option value="SET-LOG"><span>32</span>&nbsp;&nbsp;<span>Set Log</span></option>
+        <option value="CUSTOM-A"><span>33</span>&nbsp;&nbsp;<span>Custom-A</span></option>
+        <option value="CUSTOM-B"><span>34</span>&nbsp;&nbsp;<span>Custom-B</span></option>
+        <option value="EXITGUARD"><span>35</span>&nbsp;&nbsp;<span>Exitguard</span></option>
+        <option value="MASK"><span>36</span>&nbsp;&nbsp;<span>Mask</span></option>
+        <option value="URGENT"><span>37</span>&nbsp;&nbsp;<span>Urgent</span></option>
+        <option value="PA-UNSET"><span>38</span>&nbsp;&nbsp;<span>PA Unset</span></option>
+        <option value="KEYSWITCH-RESET"><span>39</span>&nbsp;&nbsp;<span>Keyswitch Reset</span></option>
+        <option value="BELL-FAIL"><span>40</span>&nbsp;&nbsp;<span>Bell Fail</span></option>
+        <option value="INTR-LOW"><span>41</span>&nbsp;&nbsp;<span>Intr Low</span></option>
+        <option value="INTR-HIGH"><span>42</span>&nbsp;&nbsp;<span>Intr High</span></option>
+        <option value="PSU-FAULT"><span>43</span>&nbsp;&nbsp;<span>PSU Fault</span></option>
+        <option value="44"><span>44</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="45"><span>45</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="46"><span>46</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="VIBRATION"><span>47</span>&nbsp;&nbsp;<span>Vibration</span></option>
+        <option value="ATM-1"><span>48</span>&nbsp;&nbsp;<span>ATM-1</span></option>
+        <option value="ATM-2"><span>49</span>&nbsp;&nbsp;<span>ATM-2</span></option>
+        <option value="ATM-3"><span>50</span>&nbsp;&nbsp;<span>ATM-3</span></option>
+        <option value="ATM-4"><span>51</span>&nbsp;&nbsp;<span>ATM-4</span></option>
+        <option value="ALARM-EXTEND"><span>52</span>&nbsp;&nbsp;<span>Alarm Extend</span></option>
+       </select>
+      </li>
+      <li>
+      </li>
+     </ol>
+    </fieldset>
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header omitZonesFieldset omitFinal">
+     <center><span class="omitZonesLabelSpan small">Selected</span></center>
+     <ol class="omitZonesOl nobr">
+      <li>
+       <div class="omitZonesSelected">
+         <span id="omitZonesSelectedByType"></span>
+         <span id="omitZonesSelectedStart"></span>
+         <span id="omitZonesSelectedSeparator"></span>
+         <span id="omitZonesSelectedEnd"></span>
+       </div>
+      </li>
+     </ol>
+    </fieldset>
+    <div id="buttonOmit" class="omitButtonOmit">Omit</div>
+    <div id="buttonUnomit" class="omitButtonUnomit">Unomit</div>
+    <div id="zoneOmitHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span><strong>Info:</strong>
+       <br><br>Select a zone and optionally an end zone, then click on a button to set the omit status.<br>
+       To omit by zone type, select a zone type and click on the Omit/Unomit button.
+      </p>
+     </div>
+    </div><!--#zoneOmitHelp-->
+   </div><!--#tabsZones-1-->
+
+
+   <div id="tabsZones-2">
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header statusZonesFieldset statusZonesStart">
+     <center><span class="statusZonesLabelSpan small">RIO address</span></center>
+     <ol class="omitZonesOl nobr">
+      <li>
+       <select name="statusZonesBusStart" id="statusZonesBusStart" class="statusZonesSelect">
+        <!--option selected="selected" value="1000">1</option><option value="2000">2</option><option value="3000">3</option><option value="4000">4</option-->
+        <option selected="selected" value="100">1</option><option value="200">2</option><option value="300">3</option><option value="400">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="statusZonesRioStart" id="statusZonesRioStart" class="statusZonesSelect">
+        <!--option selected="selected" value="0">00</option><option value="10">01</option><option value="20">02</option><option value="30">03</option><option value="40">04</option><option value="50">05</option><option value="60">06</option><option value="70">07</option><option value="80">08</option><option value="90">09</option><option value="100">10</option><option value="110">11</option><option value="120">12</option><option value="130">13</option><option value="140">14</option><option value="150">15</option-->
+        <option selected="selected" value="0">00</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="statusZonesZoneStart" id="statusZonesZoneStart" class="statusZonesSelect" disabled="disabled">
+        <option selected="selected" value="0">X</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+    <div id="zoneStatusHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all small" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span><strong>Info:</strong><br><br>
+       Select a communication line and RIO number,<br>
+       then click any update button to show the zones<br>
+       status. Omitted zones are denoted by an asterix.<br>
+       Click on an individual zone to get it's detailed status.
+      <table class="small">
+       <tr><td><strong><span class="tamperScZoneState">&nbsp;Tamper S/C&nbsp;</span></strong></td>
+        <td><strong><span class="tamperOcZoneState">&nbsp;Tamper O/C&nbsp;</span></strong></td></tr>
+       <tr><td><strong><span class="tamperCvZoneState">&nbsp;Tamper CV&nbsp;</span></strong></td>
+        <td><strong><span class="tamperAnyZoneState">&nbsp;Any tamper&nbsp;</span></strong></td></tr>
+       <tr><td><strong><span class="closedZoneState">&nbsp;Closed / Ready&nbsp;</span></strong></td>
+        <td><strong><span class="resistanceAnyZoneState">&nbsp;Any R state&nbsp;</span></strong></td></tr>
+       <tr><td><strong><span class="resistanceLowZoneState">&nbsp;Low resistance&nbsp;</span></strong></td>
+        <td><strong><span class="resistanceHighZoneState">&nbsp;High resistance&nbsp;</span></strong></td></tr>
+       <tr><td><strong><span class="openZoneState">&nbsp;Open / Not ready&nbsp;</span></strong></td>
+        <td><strong><span class="alarmZoneState">&nbsp;Any alarm&nbsp;</span></strong></td></tr>
+       <tr><td><strong><span class="maskedZoneState">&nbsp;Masked&nbsp;</span></strong></td>
+        <td><strong><span class="faultZoneState">&nbsp;Fault&nbsp;</span></strong></td></tr>
+      </table>
+      </p>
+     </div>
+    </div><!--#zoneStatusHelp-->
+
+    <img id="statusZonesRIO" src="RIO.png">
+
+    <ol id="statusZones">
+     <li id="statusZonesButtonUpdateZone1" class="statusZonesButtonUpdateZone1 statusZone ui-state-default cursor_menu">1<span class="statusZone1 statusZoneOmitted"></span></li>
+     <li id="statusZonesButtonUpdateZone2" class="statusZonesButtonUpdateZone2 statusZone ui-state-default cursor_menu">2<span class="statusZone2 statusZoneOmitted"></span></li>
+     <li id="statusZonesButtonUpdateZone3" class="statusZonesButtonUpdateZone3 statusZone ui-state-default cursor_menu">3<span class="statusZone3 statusZoneOmitted"></span></li>
+     <li id="statusZonesButtonUpdateZone4" class="statusZonesButtonUpdateZone4 statusZone ui-state-default cursor_menu">4<span class="statusZone4 statusZoneOmitted"></span></li>
+     <li id="statusZonesButtonUpdateZone5" class="statusZonesButtonUpdateZone5 statusZone ui-state-default cursor_menu">5<span class="statusZone5 statusZoneOmitted"></span></li>
+     <li id="statusZonesButtonUpdateZone6" class="statusZonesButtonUpdateZone6 statusZone ui-state-default cursor_menu">6<span class="statusZone6 statusZoneOmitted"></span></li>
+     <li id="statusZonesButtonUpdateZone7" class="statusZonesButtonUpdateZone7 statusZone ui-state-default cursor_menu">7<span class="statusZone7 statusZoneOmitted"></span></li>
+     <li id="statusZonesButtonUpdateZone8" class="statusZonesButtonUpdateZone8 statusZone ui-state-default cursor_menu">8<span class="statusZone8 statusZoneOmitted"></span></li>
+    </ol>
+
+    <table id="statusZonesButtons">
+     <tr><td><span id="statusZonesButtonUpdateReady" class="statusZonesButtonUpdate statusZonesButtonUpdateReady">Zones ready/closed</span></td>
+     <tr><td><span id="statusZonesButtonUpdateAlarm" class="statusZonesButtonUpdate statusZonesButtonUpdateAlarm">Zones alarm/closed</span></td>
+     <tr><td><span id="statusZonesButtonUpdateOpen" class="statusZonesButtonUpdate statusZonesButtonUpdateOpen">Zones open/closed status</span></td>
+     <tr><td><span id="statusZonesButtonUpdateTamper" class="statusZonesButtonUpdate statusZonesButtonUpdateTamper">Zones tamper status</span></td>
+     <tr><td><span id="statusZonesButtonUpdateRstate" class="statusZonesButtonUpdate statusZonesButtonUpdateRstate">Zones high/low resistance status</span></td>
+     <tr><td><span id="statusZonesButtonUpdateOmit" class="statusZonesButtonUpdate statusZonesButtonUpdateOmit">Zones omitted status</span></td>
+    </table>
+   </div><!--#tabsZones-2-->
+
+   <div id="tabsZones-3">
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header parametersZonesFieldset parametersStart">
+     <center><span class="parametersZonesLabelSpan small">Zone</span></center>
+     <ol class="parametersZonesOl nobr">
+      <li>
+       <select name="parametersBusStart" id="parametersBusStart" class="parametersZonesSelect">
+        <option selected="selected" value="1000">1</option><option value="2000">2</option><option value="3000">3</option><option value="4000">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="parametersRioStart" id="parametersRioStart" class="parametersZonesSelect">
+        <option selected="selected" value="0">00</option><option value="10">01</option><option value="20">02</option><option value="30">03</option><option value="40">04</option><option value="50">05</option><option value="60">06</option><option value="70">07</option><option value="80">08</option><option value="90">09</option><option value="100">10</option><option value="110">11</option><option value="120">12</option><option value="130">13</option><option value="140">14</option><option value="150">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="parametersZoneStart" id="parametersZoneStart" class="parametersZonesSelect">
+        <option selected="selected" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header parametersZonesFieldset parametersType">
+     <center><span class="parametersZonesLabelSpan small">Type</span></center>
+     <ol class="parametersZonesOl nobr">
+      <li>
+       <select name="parametersByType" id="parametersByType" class="parametersZonesSelectByType">
+        <option value="0"><span>00</span>&nbsp;&nbsp;<span>All Zones</span></option>
+        <option selected="selected" value="FINAL"><span>01</span>&nbsp;&nbsp;<span>Final</span></option>
+        <option value="EXIT"><span>02</span>&nbsp;&nbsp;<span>Exit</span></option>
+        <option value="INTRUDER"><span>03</span>&nbsp;&nbsp;<span>Intruder</span></option>
+        <option value="24-HOURS"><span>04</span>&nbsp;&nbsp;<span>24 Hours</span></option>
+        <option value="SECURITY"><span>05</span>&nbsp;&nbsp;<span>Security</span></option>
+        <option value="DUAL"><span>06</span>&nbsp;&nbsp;<span>Dual</span></option>
+        <option value="ENTRY"><span>07</span>&nbsp;&nbsp;<span>Entry</span></option>
+        <option value="PUSH-SET"><span>08</span>&nbsp;&nbsp;<span>Push Set</span></option>
+        <option value="KEYSWITCH"><span>09</span>&nbsp;&nbsp;<span>Keyswitch</span></option>
+        <option value="SECURE-FINAL"><span>10</span>&nbsp;&nbsp;<span>Secure Final</span></option>
+        <option value="PART-FINAL"><span>11</span>&nbsp;&nbsp;<span>Part Final</span></option>
+        <option value="PART-ENTRY"><span>12</span>&nbsp;&nbsp;<span>Part Entry</span></option>
+        <option value="PA"><span>13</span>&nbsp;&nbsp;<span>PA</span></option>
+        <option value="PA-SILENT"><span>14</span>&nbsp;&nbsp;<span>PA Silent</span></option>
+        <option value="PA-DELAY"><span>15</span>&nbsp;&nbsp;<span>PA Delay</span></option>
+        <option value="PA-DELAY-SILENT"><span>16</span>&nbsp;&nbsp;<span>PA Delay Silent</span></option>
+        <option value="LINK"><span>17</span>&nbsp;&nbsp;<span>Link</span></option>
+        <option value="SPARE"><span>18</span>&nbsp;&nbsp;<span>Spare</span></option>
+        <option value="FIRE"><span>19</span>&nbsp;&nbsp;<span>Fire</span></option>
+        <option value="TAMPER"><span>20</span>&nbsp;&nbsp;<span>Tamper</span></option>
+        <option value="BELL-TAMPER"><span>21</span>&nbsp;&nbsp;<span>Bell Tamper</span></option>
+        <option value="BEAM-PAIR"><span>22</span>&nbsp;&nbsp;<span>Beam Pair</span></option>
+        <option value="BATTERY-LOW"><span>23</span>&nbsp;&nbsp;<span>Battery Low</span></option>
+        <option value="LINE-FAIL"><span>24</span>&nbsp;&nbsp;<span>Line Fail</span></option>
+        <option value="AC-FAIL"><span>25</span>&nbsp;&nbsp;<span>AC Fail</span></option>
+        <option value="LOG"><span>26</span>&nbsp;&nbsp;<span>Log</span></option>
+        <option value="REMOTE-ACCESS"><span>27</span>&nbsp;&nbsp;<span>Remote Access</span></option>
+        <option value="VIDEO"><span>28</span>&nbsp;&nbsp;<span>Video</span></option>
+        <option value="VIDEO-EXIT"><span>29</span>&nbsp;&nbsp;<span>Video Exit</span></option>
+        <option value="INTRUDER-DELAY"><span>30</span>&nbsp;&nbsp;<span>Intruder Delay</span></option>
+        <option value="LOG-DELAY"><span>31</span>&nbsp;&nbsp;<span>Log Delay</span></option>
+        <option value="SET-LOG"><span>32</span>&nbsp;&nbsp;<span>Set Log</span></option>
+        <option value="CUSTOM-A"><span>33</span>&nbsp;&nbsp;<span>Custom-A</span></option>
+        <option value="CUSTOM-B"><span>34</span>&nbsp;&nbsp;<span>Custom-B</span></option>
+        <option value="EXITGUARD"><span>35</span>&nbsp;&nbsp;<span>Exitguard</span></option>
+        <option value="MASK"><span>36</span>&nbsp;&nbsp;<span>Mask</span></option>
+        <option value="URGENT"><span>37</span>&nbsp;&nbsp;<span>Urgent</span></option>
+        <option value="PA-UNSET"><span>38</span>&nbsp;&nbsp;<span>PA Unset</span></option>
+        <option value="KEYSWITCH-RESET"><span>39</span>&nbsp;&nbsp;<span>Keyswitch Reset</span></option>
+        <option value="BELL-FAIL"><span>40</span>&nbsp;&nbsp;<span>Bell Fail</span></option>
+        <option value="INTR-LOW"><span>41</span>&nbsp;&nbsp;<span>Intr Low</span></option>
+        <option value="INTR-HIGH"><span>42</span>&nbsp;&nbsp;<span>Intr High</span></option>
+        <option value="PSU-FAULT"><span>43</span>&nbsp;&nbsp;<span>PSU Fault</span></option>
+        <option value="44"><span>44</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="45"><span>45</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="46"><span>46</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="VIBRATION"><span>47</span>&nbsp;&nbsp;<span>Vibration</span></option>
+        <option value="ATM-1"><span>48</span>&nbsp;&nbsp;<span>ATM-1</span></option>
+        <option value="ATM-2"><span>49</span>&nbsp;&nbsp;<span>ATM-2</span></option>
+        <option value="ATM-3"><span>50</span>&nbsp;&nbsp;<span>ATM-3</span></option>
+        <option value="ATM-4"><span>51</span>&nbsp;&nbsp;<span>ATM-4</span></option>
+        <option value="ALARM-EXTEND"><span>52</span>&nbsp;&nbsp;<span>Alarm Extend</span></option>
+       </select>
+      </li>
+      <li>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header parametersZonesFieldset parametersFinal">
+     <center><span class="parametersZonesLabelSpan small">Selected</span></center>
+     <ol class="parametersZonesOl nobr">
+      <li>
+       <div class="parametersZonesSelected">
+         <span id="parametersZonesSelectedByType"></span>
+         <span id="parametersZonesSelectedStart"></span>
+       </div>
+      </li>
+     </ol>
+    </fieldset>
+
+    <div id="buttonSoakTestOn" class="parametersButtonSoakTestOn">Enable soak-test</div>
+    <div id="buttonSoakTestOff" class="parametersButtonSoakTestOff">Disable soak-test</div>
+    <div id="buttonPartSetOn" class="parametersButtonPartSetOn">Enable part-set</div>
+    <div id="buttonPartSetOff" class="parametersButtonPartSetOff">Disable part-set</div>
+
+    <div id="zoneParametersHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span><strong>Info:</strong><br><br>
+       Select a zone or zone type, then click on one of<br>the buttons to enable or disable the parameter.
+      </p>
+     </div>
+    </div><!--#zoneParametersHelp-->
+   </div><!--#tabsZones-3-->
+
+   <div id="tabsZones-4">
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header programZonesFieldset programStart">
+     <center><span class="programZonesLabelSpan small">Zone</span></center>
+     <ol class="programZonesOl nobr">
+      <li>
+       <select name="programBusStart" id="programBusStart" class="programZonesSelect">
+        <option selected="selected" value="1000">1</option><option value="2000">2</option><option value="3000">3</option><option value="4000">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="programRioStart" id="programRioStart" class="programZonesSelect">
+        <option selected="selected" value="0">00</option><option value="10">01</option><option value="20">02</option><option value="30">03</option><option value="40">04</option><option value="50">05</option><option value="60">06</option><option value="70">07</option><option value="80">08</option><option value="90">09</option><option value="100">10</option><option value="110">11</option><option value="120">12</option><option value="130">13</option><option value="140">14</option><option value="150">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="programZoneStart" id="programZoneStart" class="programZonesSelect">
+        <option selected="selected" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header programZonesFieldset programState">
+     <center><span class="programZonesLabelSpan small">Virtual zone state</span></center>
+     <ol class="programZonesOl nobr">
+      <li>
+       <select name="programState" id="programState" class="programStateSelect">
+        <option value="OPEN"><span>Open</span></option>
+        <option selected="selected" value="CLOSED"><span>Closed</span></option>
+        <option value="OPEN-CLOSE"><span>Open and close</span></option>
+        <option value="TAMPER"><span>Tamper</span></option>
+       </select>
+      </li>
+      <li>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header programZonesFieldset programArea">
+     <center><span class="programZonesLabelSpan small">Area</span></center>
+     <ol class="programZonesOl nobr">
+      <li>
+       <select name="programArea" id="programArea" class="programAreaSelect">
+        <option selected="selected" value="A1"><span>01</span>&nbsp;&nbsp;<span>A1</span></option>
+        <option value="A2"><span>02</span>&nbsp;&nbsp;<span>A2</span></option>
+        <option value="A3"><span>03</span>&nbsp;&nbsp;<span>A3</span></option>
+        <option value="A4"><span>04</span>&nbsp;&nbsp;<span>A4</span></option>
+        <option value="A5"><span>05</span>&nbsp;&nbsp;<span>A5</span></option>
+        <option value="A6"><span>06</span>&nbsp;&nbsp;<span>A6</span></option>
+        <option value="A7"><span>07</span>&nbsp;&nbsp;<span>A7</span></option>
+        <option value="A8"><span>08</span>&nbsp;&nbsp;<span>A8</span></option>
+        <option value="B1"><span>09</span>&nbsp;&nbsp;<span>B1</span></option>
+        <option value="B2"><span>10</span>&nbsp;&nbsp;<span>B2</span></option>
+        <option value="B3"><span>11</span>&nbsp;&nbsp;<span>B3</span></option>
+        <option value="B4"><span>12</span>&nbsp;&nbsp;<span>B4</span></option>
+        <option value="B5"><span>13</span>&nbsp;&nbsp;<span>B5</span></option>
+        <option value="B6"><span>14</span>&nbsp;&nbsp;<span>B6</span></option>
+        <option value="B7"><span>15</span>&nbsp;&nbsp;<span>B7</span></option>
+        <option value="B8"><span>16</span>&nbsp;&nbsp;<span>B8</span></option>
+        <option value="C1"><span>17</span>&nbsp;&nbsp;<span>C1</span></option>
+        <option value="C2"><span>18</span>&nbsp;&nbsp;<span>C2</span></option>
+        <option value="C3"><span>19</span>&nbsp;&nbsp;<span>C3</span></option>
+        <option value="C4"><span>20</span>&nbsp;&nbsp;<span>C4</span></option>
+        <option value="C5"><span>21</span>&nbsp;&nbsp;<span>C5</span></option>
+        <option value="C6"><span>22</span>&nbsp;&nbsp;<span>C6</span></option>
+        <option value="C7"><span>23</span>&nbsp;&nbsp;<span>C7</span></option>
+        <option value="C8"><span>24</span>&nbsp;&nbsp;<span>C8</span></option>
+        <option value="D1"><span>25</span>&nbsp;&nbsp;<span>D1</span></option>
+        <option value="D2"><span>26</span>&nbsp;&nbsp;<span>D2</span></option>
+        <option value="D3"><span>27</span>&nbsp;&nbsp;<span>D3</span></option>
+        <option value="D4"><span>28</span>&nbsp;&nbsp;<span>D4</span></option>
+        <option value="D5"><span>29</span>&nbsp;&nbsp;<span>D5</span></option>
+        <option value="D6"><span>30</span>&nbsp;&nbsp;<span>D6</span></option>
+        <option value="D7"><span>31</span>&nbsp;&nbsp;<span>D7</span></option>
+        <option value="D8"><span>32</span>&nbsp;&nbsp;<span>D8</span></option>
+       </select>
+      </li>
+      <li>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header parametersZonesFieldset programType">
+     <center><span class="programZonesLabelSpan small">Type</span></center>
+     <ol class="programZonesOl nobr">
+      <li>
+       <select name="programType" id="programType" class="programTypeSelect">
+        <option selected="selected" value="FINAL"><span>01</span>&nbsp;&nbsp;<span>Final</span></option>
+        <option value="EXIT"><span>02</span>&nbsp;&nbsp;<span>Exit</span></option>
+        <option value="INTRUDER"><span>03</span>&nbsp;&nbsp;<span>Intruder</span></option>
+        <option value="24-HOURS"><span>04</span>&nbsp;&nbsp;<span>24 Hours</span></option>
+        <option value="SECURITY"><span>05</span>&nbsp;&nbsp;<span>Security</span></option>
+        <option value="DUAL"><span>06</span>&nbsp;&nbsp;<span>Dual</span></option>
+        <option value="ENTRY"><span>07</span>&nbsp;&nbsp;<span>Entry</span></option>
+        <option value="PUSH-SET"><span>08</span>&nbsp;&nbsp;<span>Push Set</span></option>
+        <option value="KEYSWITCH"><span>09</span>&nbsp;&nbsp;<span>Keyswitch</span></option>
+        <option value="SECURE-FINAL"><span>10</span>&nbsp;&nbsp;<span>Secure Final</span></option>
+        <option value="PART-FINAL"><span>11</span>&nbsp;&nbsp;<span>Part Final</span></option>
+        <option value="PART-ENTRY"><span>12</span>&nbsp;&nbsp;<span>Part Entry</span></option>
+        <option value="PA"><span>13</span>&nbsp;&nbsp;<span>PA</span></option>
+        <option value="PA-SILENT"><span>14</span>&nbsp;&nbsp;<span>PA Silent</span></option>
+        <option value="PA-DELAY"><span>15</span>&nbsp;&nbsp;<span>PA Delay</span></option>
+        <option value="PA-DELAY-SILENT"><span>16</span>&nbsp;&nbsp;<span>PA Delay Silent</span></option>
+        <option value="LINK"><span>17</span>&nbsp;&nbsp;<span>Link</span></option>
+        <option value="SPARE"><span>18</span>&nbsp;&nbsp;<span>Spare</span></option>
+        <option value="FIRE"><span>19</span>&nbsp;&nbsp;<span>Fire</span></option>
+        <option value="TAMPER"><span>20</span>&nbsp;&nbsp;<span>Tamper</span></option>
+        <option value="BELL-TAMPER"><span>21</span>&nbsp;&nbsp;<span>Bell Tamper</span></option>
+        <option value="BEAM-PAIR"><span>22</span>&nbsp;&nbsp;<span>Beam Pair</span></option>
+        <option value="BATTERY-LOW"><span>23</span>&nbsp;&nbsp;<span>Battery Low</span></option>
+        <option value="LINE-FAIL"><span>24</span>&nbsp;&nbsp;<span>Line Fail</span></option>
+        <option value="AC-FAIL"><span>25</span>&nbsp;&nbsp;<span>AC Fail</span></option>
+        <option value="LOG"><span>26</span>&nbsp;&nbsp;<span>Log</span></option>
+        <option value="REMOTE-ACCESS"><span>27</span>&nbsp;&nbsp;<span>Remote Access</span></option>
+        <option value="VIDEO"><span>28</span>&nbsp;&nbsp;<span>Video</span></option>
+        <option value="VIDEO-EXIT"><span>29</span>&nbsp;&nbsp;<span>Video Exit</span></option>
+        <option value="INTRUDER-DELAY"><span>30</span>&nbsp;&nbsp;<span>Intruder Delay</span></option>
+        <option value="LOG-DELAY"><span>31</span>&nbsp;&nbsp;<span>Log Delay</span></option>
+        <option value="SET-LOG"><span>32</span>&nbsp;&nbsp;<span>Set Log</span></option>
+        <option value="CUSTOM-A"><span>33</span>&nbsp;&nbsp;<span>Custom-A</span></option>
+        <option value="CUSTOM-B"><span>34</span>&nbsp;&nbsp;<span>Custom-B</span></option>
+        <option value="EXITGUARD"><span>35</span>&nbsp;&nbsp;<span>Exitguard</span></option>
+        <option value="MASK"><span>36</span>&nbsp;&nbsp;<span>Mask</span></option>
+        <option value="URGENT"><span>37</span>&nbsp;&nbsp;<span>Urgent</span></option>
+        <option value="PA-UNSET"><span>38</span>&nbsp;&nbsp;<span>PA Unset</span></option>
+        <option value="KEYSWITCH-RESET"><span>39</span>&nbsp;&nbsp;<span>Keyswitch Reset</span></option>
+        <option value="BELL-FAIL"><span>40</span>&nbsp;&nbsp;<span>Bell Fail</span></option>
+        <option value="INTR-LOW"><span>41</span>&nbsp;&nbsp;<span>Intr Low</span></option>
+        <option value="INTR-HIGH"><span>42</span>&nbsp;&nbsp;<span>Intr High</span></option>
+        <option value="PSU-FAULT"><span>43</span>&nbsp;&nbsp;<span>PSU Fault</span></option>
+        <option value="44"><span>44</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="45"><span>45</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="46"><span>46</span>&nbsp;&nbsp;<span>Not Used</span></option>
+        <option value="VIBRATION"><span>47</span>&nbsp;&nbsp;<span>Vibration</span></option>
+        <option value="ATM-1"><span>48</span>&nbsp;&nbsp;<span>ATM-1</span></option>
+        <option value="ATM-2"><span>49</span>&nbsp;&nbsp;<span>ATM-2</span></option>
+        <option value="ATM-3"><span>50</span>&nbsp;&nbsp;<span>ATM-3</span></option>
+        <option value="ATM-4"><span>51</span>&nbsp;&nbsp;<span>ATM-4</span></option>
+        <option value="ALARM-EXTEND"><span>52</span>&nbsp;&nbsp;<span>Alarm Extend</span></option>
+       </select>
+      </li>
+      <li>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header parametersZonesFieldset programDesc">
+     <center><span class="programZonesLabelSpan small">Description</span></center>
+     <ol class="programZonesOl nobr">
+      <li>
+        <input class="ui-corner-all ui-helper-clearfix ui-widget-content programDescInput" id="programDescInput" type="text" name="programDescInput" placeholder="Zone description" autofocus autocomplete>
+      </li>
+     </ol>
+    </fieldset>
+
+    <div id="programButton" class="programButton">Program zone</div>
+
+    <div id="zoneProgramHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span><strong>Info:</strong><br><br>
+This is the most powerfull command that opengalaxy can execute as it can be used to change the programming of a zone. <br>
+<br>
+The virtual zone state is only applied to the zone if it is a 'virtual' zone (ie. the RIO does not exist).<br>
+If this command is used on an existing zone it does not set the zone state, but it does apply the new area id, zone type and zone description.<br>
+Leaving a virtual zone open is a bad idea, it will prevent areas from arming!
+      </p>
+     </div>
+    </div><!--#zoneProgramHelp-->
+   </div><!--#tabsZones-4-->
+
+  </div><!--#tabsZones-->
+
+  <h3 id="anchorOutput">Outputs</h3>
+  <div id="tabsOutput">
+   <ul>
+    <li><a href="#tabsOutput-1">Set / Reset</a></li>
+    <li id="anchorStatusOutput"><a href="#tabsOutput-2">Status</a></li>
+   </ul>
+   <div id="tabsOutput-1">
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header outputsSetFieldset outputStart">
+     <center><span class="outputsSetLabelSpan small">First output</span></center>
+     <ol class="outputsSetOl nobr">
+      <li>
+       <select name="outputBusStart" id="outputBusStart" class="outputsSetSelect">
+        <option selected="selected" value="1000">1</option><option value="2000">2</option><option value="3000">3</option><option value="4000">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="outputRioStart" id="outputRioStart" class="outputsSetSelect">
+        <option selected="selected" value="0">00</option><option value="10">01</option><option value="20">02</option><option value="30">03</option><option value="40">04</option><option value="50">05</option><option value="60">06</option><option value="70">07</option><option value="80">08</option><option value="90">09</option><option value="100">10</option><option value="110">11</option><option value="120">12</option><option value="130">13</option><option value="140">14</option><option value="150">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="outputOpStart" id="outputOpStart" class="outputsSetSelect">
+        <option selected="selected" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header outputsSetFieldset outputEnd">
+     <center><span class="outputsSetLabelSpan small">Last output</span></center>
+     <ol class="outputsSetOl nobr">
+      <li>
+       <select name="outputBusEnd" id="outputBusEnd" class="outputsSetSelect">
+        <option selected="selected" value="1000">1</option><option value="2000">2</option><option value="3000">3</option><option value="4000">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="outputRioEnd" id="outputRioEnd" class="outputsSetSelect">
+        <option selected="selected" value="0">00</option><option value="10">01</option><option value="20">02</option><option value="30">03</option><option value="40">04</option><option value="50">05</option><option value="60">06</option><option value="70">07</option><option value="80">08</option><option value="90">09</option><option value="100">10</option><option value="110">11</option><option value="120">12</option><option value="130">13</option><option value="140">14</option><option value="150">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="outputOpEnd" id="outputOpEnd" class="outputsSetSelect">
+        <option selected="selected" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header outputsSetFieldset outputType">
+     <center><span class="outputsSetLabelSpan small">By type</span></center>
+     <ol class="outputsSetOl nobr">
+      <li>
+       <select name="outputByType" id="outputByType" class="outputsSetSelectByType">
+        <option selected="selected" value="1"><span>01</span>&nbsp;&nbsp;<span>Bells</span></option>
+        <option value="2"><span>02</span>&nbsp;&nbsp;<span>Strobe</span></option>
+        <option value="3"><span>03</span>&nbsp;&nbsp;<span>PA</span></option>
+        <option value="4"><span>04</span>&nbsp;&nbsp;<span>Intruder</span></option>
+        <option value="5"><span>05</span>&nbsp;&nbsp;<span>Tamper</span></option>
+        <option value="6"><span>06</span>&nbsp;&nbsp;<span>24 Hours</span></option>
+        <option value="7"><span>07</span>&nbsp;&nbsp;<span>Reset</span></option>
+        <option value="8"><span>08</span>&nbsp;&nbsp;<span>Switch DC</span></option>
+        <option value="9"><span>09</span>&nbsp;&nbsp;<span>Set</span></option>
+        <option value="10"><span>10</span>&nbsp;&nbsp;<span>Engineer</span></option>
+        <option value="11"><span>11</span>&nbsp;&nbsp;<span>Spare</span></option>
+        <option value="12"><span>12</span>&nbsp;&nbsp;<span>Ready</span></option>
+        <option value="13"><span>13</span>&nbsp;&nbsp;<span>Security</span></option>
+        <option value="14"><span>14</span>&nbsp;&nbsp;<span>AC Fail</span></option>
+        <option value="15"><span>15</span>&nbsp;&nbsp;<span>Battery Low</span></option>
+        <option value="16"><span>16</span>&nbsp;&nbsp;<span>Fire</span></option>
+        <option value="17"><span>17</span>&nbsp;&nbsp;<span>Horn</span></option>
+        <option value="18"><span>18</span>&nbsp;&nbsp;<span>E/E Horn</span></option>
+        <option value="19"><span>19</span>&nbsp;&nbsp;<span>Part Set</span></option>
+        <option value="20"><span>20</span>&nbsp;&nbsp;<span>Confirm</span></option>
+        <option value="21"><span>21</span>&nbsp;&nbsp;<span>Line Fail</span></option>
+        <option value="22"><span>22</span>&nbsp;&nbsp;<span>Video</span></option>
+        <option value="23"><span>23</span>&nbsp;&nbsp;<span>Comm Fail</span></option>
+        <option value="24"><span>24</span>&nbsp;&nbsp;<span>Batt Test</span></option>
+        <option value="25"><span>25</span>&nbsp;&nbsp;<span>Wrong Code</span></option>
+        <option value="26"><span>26</span>&nbsp;&nbsp;<span>Alert</span></option>
+        <option value="27"><span>27</span>&nbsp;&nbsp;<span>Fire Delay</span></option>
+        <option value="28"><span>28</span>&nbsp;&nbsp;<span>No Re-Arm</span></option>
+        <option value="29"><span>29</span>&nbsp;&nbsp;<span>Timer A</span></option>
+        <option value="30"><span>30</span>&nbsp;&nbsp;<span>Timer B</span></option>
+        <option value="31"><span>31</span>&nbsp;&nbsp;<span>Walk Test</span></option>
+        <option value="32"><span>32</span>&nbsp;&nbsp;<span>Zone Omit</span></option>
+        <option value="33"><span>33</span>&nbsp;&nbsp;<span>Warning</span></option>
+        <option value="34"><span>34</span>&nbsp;&nbsp;<span>Custom-A</span></option>
+        <option value="35"><span>35</span>&nbsp;&nbsp;<span>Custom-B</span></option>
+        <option value="36"><span>36</span>&nbsp;&nbsp;<span>Test</span></option>
+        <option value="37"><span>37</span>&nbsp;&nbsp;<span>Reset RQD</span></option>
+        <option value="38"><span>38</span>&nbsp;&nbsp;<span>Mask</span></option>
+        <option value="39"><span>39</span>&nbsp;&nbsp;<span>Valid Code</span></option>
+        <option value="40"><span>40</span>&nbsp;&nbsp;<span>Fail Set</span></option>
+        <option value="41"><span>41</span>&nbsp;&nbsp;<span>Duress</span></option>
+        <option value="42"><span>42</span>&nbsp;&nbsp;<span>Illigal Code</span></option>
+        <option value="43"><span>43</span>&nbsp;&nbsp;<span>MAX Tamp</span></option>
+        <option value="44"><span>44</span>&nbsp;&nbsp;<span>Abort</span></option>
+        <option value="45"><span>45</span>&nbsp;&nbsp;<span>Unset</span></option>
+        <option value="46"><span>46</span>&nbsp;&nbsp;<span>Set Late</span></option>
+        <option value="47"><span>47</span>&nbsp;&nbsp;<span>U/S Early</span></option>
+        <option value="48"><span>48</span>&nbsp;&nbsp;<span>Prewarn</span></option>
+        <option value="49"><span>49</span>&nbsp;&nbsp;<span>Autoset</span></option>
+        <option value="50"><span>50</span>&nbsp;&nbsp;<span>DR. Masked</span></option>
+        <option value="51"><span>51</span>&nbsp;&nbsp;<span>Link-A</span></option>
+        <option value="52"><span>52</span>&nbsp;&nbsp;<span>Link-B</span></option>
+        <option value="53"><span>53</span>&nbsp;&nbsp;<span>Link-C</span></option>
+        <option value="54"><span>54</span>&nbsp;&nbsp;<span>Link-D</span></option>
+        <option value="55"><span>55</span>&nbsp;&nbsp;<span>Link-E</span></option>
+        <option value="56"><span>56</span>&nbsp;&nbsp;<span>Link-F</span></option>
+        <option value="57"><span>57</span>&nbsp;&nbsp;<span>Link-G</span></option>
+        <option value="58"><span>58</span>&nbsp;&nbsp;<span>Link-H</span></option>
+        <option value="59"><span>59</span>&nbsp;&nbsp;<span>Link-I</span></option>
+        <option value="60"><span>60</span>&nbsp;&nbsp;<span>Link-J</span></option>
+        <option value="61"><span>61</span>&nbsp;&nbsp;<span>Link-K</span></option>
+        <option value="62"><span>62</span>&nbsp;&nbsp;<span>Link-L</span></option>
+        <option value="63"><span>63</span>&nbsp;&nbsp;<span>Link-M</span></option>
+        <option value="64"><span>64</span>&nbsp;&nbsp;<span>Link-N</span></option>
+        <option value="65"><span>65</span>&nbsp;&nbsp;<span>Link-O</span></option>
+        <option value="66"><span>66</span>&nbsp;&nbsp;<span>RF Jam</span></option>
+        <option value="67"><span>67</span>&nbsp;&nbsp;<span>RF Super</span></option>
+        <option value="68"><span>68</span>&nbsp;&nbsp;<span>Bell Fail</span></option>
+        <option value="69"><span>69</span>&nbsp;&nbsp;<span>Low Volts</span></option>
+        <option value="70"><span>70</span>&nbsp;&nbsp;<span>Lockout</span></option>
+        <option value="71"><span>71</span>&nbsp;&nbsp;<span>Vibration Test</span></option>
+        <option value="72"><span>72</span>&nbsp;&nbsp;<span>ATM-1</span></option>
+        <option value="73"><span>73</span>&nbsp;&nbsp;<span>ATM-2</span></option>
+        <option value="74"><span>74</span>&nbsp;&nbsp;<span>ATM-3</span></option>
+        <option value="75"><span>75</span>&nbsp;&nbsp;<span>ATM-4</span></option>
+        <option value="76"><span>76</span>&nbsp;&nbsp;<span>Fault</span></option>
+        <option value="77"><span>77</span>&nbsp;&nbsp;<span>Bell Test</span></option>
+        <option value="78"><span>78</span>&nbsp;&nbsp;<span>Comms Test</span></option>
+       </select>
+       <br/>
+       <select name="outputByTypeArea" id="outputByTypeArea" class="outputsSetSelectByType">
+        <option selected="selected" value="A1"><span>01</span>&nbsp;&nbsp;<span>A1</span></option>
+        <option value="A2"><span>02</span>&nbsp;&nbsp;<span>A2</span></option>
+        <option value="A3"><span>03</span>&nbsp;&nbsp;<span>A3</span></option>
+        <option value="A4"><span>04</span>&nbsp;&nbsp;<span>A4</span></option>
+        <option value="A5"><span>05</span>&nbsp;&nbsp;<span>A5</span></option>
+        <option value="A6"><span>06</span>&nbsp;&nbsp;<span>A6</span></option>
+        <option value="A7"><span>07</span>&nbsp;&nbsp;<span>A7</span></option>
+        <option value="A8"><span>08</span>&nbsp;&nbsp;<span>A8</span></option>
+        <option value="B1"><span>09</span>&nbsp;&nbsp;<span>B1</span></option>
+        <option value="B2"><span>10</span>&nbsp;&nbsp;<span>B2</span></option>
+        <option value="B3"><span>11</span>&nbsp;&nbsp;<span>B3</span></option>
+        <option value="B4"><span>12</span>&nbsp;&nbsp;<span>B4</span></option>
+        <option value="B5"><span>13</span>&nbsp;&nbsp;<span>B5</span></option>
+        <option value="B6"><span>14</span>&nbsp;&nbsp;<span>B6</span></option>
+        <option value="B7"><span>15</span>&nbsp;&nbsp;<span>B7</span></option>
+        <option value="B8"><span>16</span>&nbsp;&nbsp;<span>B8</span></option>
+        <option value="C1"><span>17</span>&nbsp;&nbsp;<span>C1</span></option>
+        <option value="C2"><span>18</span>&nbsp;&nbsp;<span>C2</span></option>
+        <option value="C3"><span>19</span>&nbsp;&nbsp;<span>C3</span></option>
+        <option value="C4"><span>20</span>&nbsp;&nbsp;<span>C4</span></option>
+        <option value="C5"><span>21</span>&nbsp;&nbsp;<span>C5</span></option>
+        <option value="C6"><span>22</span>&nbsp;&nbsp;<span>C6</span></option>
+        <option value="C7"><span>23</span>&nbsp;&nbsp;<span>C7</span></option>
+        <option value="C8"><span>24</span>&nbsp;&nbsp;<span>C8</span></option>
+        <option value="D1"><span>25</span>&nbsp;&nbsp;<span>D1</span></option>
+        <option value="D2"><span>26</span>&nbsp;&nbsp;<span>D2</span></option>
+        <option value="D3"><span>27</span>&nbsp;&nbsp;<span>D3</span></option>
+        <option value="D4"><span>28</span>&nbsp;&nbsp;<span>D4</span></option>
+        <option value="D5"><span>29</span>&nbsp;&nbsp;<span>D5</span></option>
+        <option value="D6"><span>30</span>&nbsp;&nbsp;<span>D6</span></option>
+        <option value="D7"><span>31</span>&nbsp;&nbsp;<span>D7</span></option>
+        <option value="D8"><span>32</span>&nbsp;&nbsp;<span>D8</span></option>
+       </select>
+      </li>
+      <li>
+      </li>
+     </ol>
+    </fieldset>
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header outputsSetFieldset outputFinal">
+     <center><span class="outputsSetLabelSpan small">Selected</span></center>
+     <ol class="outputsSetOl nobr">
+      <li>
+       <div class="outputsSetSelected">
+         <span id="outputsSetSelectedByType"></span>
+         <span id="outputsSetSelectedStart"></span>
+         <span id="outputsSetSelectedSeparator"></span>
+         <span id="outputsSetSelectedEnd"></span>
+         <span id="outputsSetSelectedByTypeArea"></span>
+       </div>
+      </li>
+     </ol>
+    </fieldset>
+
+    <div id="buttonOutputSet" class="outputButtonSet">Set</div>
+    <div id="buttonOutputUnset" class="outputButtonUnset">Reset</div>
+
+    <div id="outputsSetHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span><strong>Info:</strong><br><br>
+       Select an output and optionally an end output, then click on the Set/Reset button to set the status.<br>
+       To (re)set by output type, select an output type and an area and click on the Set/Reset button.<br>
+       The area an output belongs to must not be in an alarm state or the command will have no effect.
+      </p>
+     </div>
+    </div><!--#outputsSetHelp-->
+
+   </div><!--#tabsOutput-1-->
+   <div id="tabsOutput-2">
+
+
+    <fieldset class="ui-corner-all ui-helper-clearfix ui-widget-header statusOutputsFieldset statusOutputsStart">
+     <center><span class="statusZonesLabelSpan small">RIO address</span></center>
+     <ol class="omitZonesOl nobr">
+      <li>
+       <select name="statusOutputsBusStart" id="statusOutputsBusStart" class="statusOutputsSelect">
+        <option selected="selected" value="100">1</option><option value="200">2</option><option value="300">3</option><option value="400">4</option>
+       </select>
+      </li>
+      <li>
+       <select name="statusOutputsRioStart" id="statusOutputsRioStart" class="statusOutputsSelect">
+        <option selected="selected" value="0">00</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
+       </select>
+      </li>
+      <li>
+       <select name="statusOutputsOutputStart" id="statusOutputsOutputStart" class="statusOutputsSelect" disabled="disabled">
+        <option selected="selected" value="0">X</option>
+       </select>
+      </li>
+     </ol>
+    </fieldset>
+    <div id="outputStatusHelp" class="ui-widget">
+     <div class="ui-state-highlight ui-corner-all" style="padding:0 0.7em;">
+      <p class="small">
+       <span class="ui-icon ui-icon-info" style="float:left; margin-right:0.3em;"></span><strong>Info:</strong><br><br>
+       Select a communication line and RIO number,<br>
+       then click on update to show the status of the outputs.<br>
+      <table class="small">
+       <tr><td><strong><span class="onOutputState">&nbsp;On&nbsp;</span></strong></td>
+       <td><strong><span class="offOutputState">&nbsp;Off&nbsp;</span></strong></td></tr>
+      </table>
+      </p>
+     </div>
+    </div><!--#outputStatusHelp-->
+    <img id="statusOutputsRIO" src="RIO.png">
+    <ol id="statusOutputs">
+     <li id="statusOutput1" class="statusOutputs ui-state-default cursor_nomenu" title="Output 1">1</li>
+     <li id="statusOutput2" class="statusOutputs ui-state-default cursor_nomenu" title="Output 2">2</li>
+     <li id="statusOutput3" class="statusOutputs ui-state-default cursor_nomenu" title="Output 3">3</li>
+     <li id="statusOutput4" class="statusOutputs ui-state-default cursor_nomenu" title="Output 4">4</li>
+    </ol>
+    <div id="statusOutputsButtonUpdate" class="statusOutputsButtonUpdate">Update</div>
+
+
+   </div><!--#tabsOutput-2-->
+  </div><!--#tabsOutput-->
+ </div><!--Toolbox-->
+
+ <div id="Spacer" class="ui-state-default"><hr class="ns-resize" title="Drag me up or down to resize..."></div><!--Spacer-->
+
+ <div id="SIA-Messages">
+  <h3>SIA Messages</h3>
+  <div class="sia-table-outer_div">
+   <table class="sia-table-outer_table">
+    <thead>
+     <tr class="">
+      <th class="sia-table-th1">Time</th>
+      <th style="display:none;">Account</th>
+      <th class="sia-table-th3">Code</th>
+      <th class="sia-table-th4">Name</th>
+      <th class="sia-table-th5">ASCII</th>
+      <th class="sia-table-th6">Description</th>
+      <th class="sia-table-th7">Type</th>
+      <th class="sia-table-th8">Address</th>
+      <th class="sia-table-th9">User</th>
+      <th class="sia-table-th10">Area</th>
+      <th class="sia-table-th11">Peripheral</th>
+     </tr>
+    <thead>
+    <tbody>
+     <tr>
+      <td colspan="12">
+       <div class="sia-table-inner_div">
+        <table id="SIA-Messages-Table" class="sia-table-inner_table">
+         <tbody>
+         </tbody>
+        </table>
+       </div><!--.sia-table-inner_div-->
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div><!--.sia-table-outer_div-->
+ </div><!--#SIA-Messages-->
+
+</div><!--#Desktop-->
+
+<div id="SocketStatus">
+ <div id="SocketStatus-MenuBar"><span id="SocketStatus-MenuToggle"><span class="cursor_menu">Menu</span></span>
+
+  <ul id="SocketStatus-Menu">
+
+   <li id="SocketStatus-Menu-Commandline" class="nobr"><span class="ui-icon ui-icon-home"></span>Commandline</li>
+
+   <li id="SocketStatus-Menu-Resources" class="nobr"><span class="ui-icon ui-icon-lightbulb"></span>Resources
+    <ul>
+     <li id="SocketStatus-Menu-Resources-Homepage" class="nobr"><a href="http://sourceforge.net/projects/galaxy4linux/" target="blank"><span class="ui-icon ui-icon-home"></span>Sourceforge</a></li>
+     <li id="SocketStatus-Menu-Resources-SIA" class="nobr"><a href="https://web.archive.org/web/20130914045540/http://www.basshome.com/sia-standard-communications-protocol.htm" target="blank"><span class="ui-icon ui-icon-home"></span>SIA Protocol</a></li>
+    </ul>
+   </li>
+
+   <li id="SocketStatus-Menu-Help" class="nobr"><span class="ui-icon ui-icon-help"></span>Help
+    <ul>
+     <li id="SocketStatus-Menu-Help-About" class="nobr"><span class="ui-icon ui-icon-info"></span>About</li>
+    </ul>
+   </li>
+
+  </ul>
+
+ </div><!--#SocketStatus-MenuBar-->
+ <center>
+  <div id="ws_url_container" class="ui-dialog-content">
+   <div id="ws_url_status" class="ui-corner-all ui-state-error" title="Websocket connection status">Waiting for server connection...</div><!--#ws_url_status-->
+   <div id="ws_cmd_status" class="ui-corner-all ui-state-error" title="Websocket command status">----</div><!--#ws_cmd_status-->
+  </div><!--#ws_url_container-->
+ </center>
+</div><!--#SocketStatus-->
+
+<div id="openGalaxy-About">
+<div class="small">
+<p class="nobr blue">
+<span class="fat">openGalaxy - A SIA receiver for Galaxy security control panels.<br/>
+Copyright &copy; 2015 - 2016 Alexander Bruines</span> &lt;<a href="mailto:alexander.bruines@gmail.com">alexander.bruines@gmail.com</a>&gt;
+</p>
+<p>
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2 as
+as published by the Free Software Foundation, or (at your option)
+any later version.
+</p>
+<p>
+In addition, as a special exception, the author of this program
+gives permission to link the code of its release with the OpenSSL
+project's "OpenSSL" library (or with modified versions of it that
+use the same license as the "OpenSSL" library), and distribute the
+linked executables. You must obey the GNU General Public License
+in all respects for all of the code used other than "OpenSSL".
+If you modify this file, you may extend this exception to your
+version of the file, but you are not obligated to do so.
+If you do not wish to do so, delete this exception statement
+from your version.
+</p>
+<p>
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+</p>
+<p>
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see &lt;<a href="http://www.gnu.org/licenses/" target="blank">http://www.gnu.org/licenses/</a>&gt;.
+</p>
+<hr/>
+<p>
+openGalaxy is a software tool that listens on a serial port for incoming
+SIA formatted alarm messages from a Galaxy security control panel. These
+messages are sent to a websocket interface and may optionally be stored
+in a MySQL database and/or forwarded by email.
+</p>
+<p>
+This software is written for use by trained security professionals, but 
+it could also be used by a layperson who wants to receive the exact same
+messages that are normally send to a private emergency response company.
+</p>
+<p>
+In addition to just listening for messages, openGalaxy can also be used to
+arm and disarm areas, omit zones and even to (re)set outputs.
+</p>
+<p>
+So far, this software has only been tested with a 'Galaxy G3-520' control
+panel and some older Galaxy control panels (G18/G60) with varying (Dutch)
+firmware versions. (with 'group' or 'blokken' mode enabled)
+</p>
+<p>
+More information about Galaxy control panels can be found on the
+manufacturers website for the european market:
+<a href="http://www.security.honeywell.com/uk/" target="blank">http://www.security.honeywell.com/uk/</a>
+</p>
+<p>
+This software was written using publicly available documentation about the
+SIA protocol combined with data analysis of observed RS232 traffic (in
+between a Galaxy panel and other software packages) in order to figure out
+how to remotely control the panel using the SIA protocol.
+</p>
+<p class="red">
+openGalaxy is still in a testing (BETA) phase and should not be considered
+stable or secure (yet).
+</p>
+<p>
+openGalaxy is based in part on the work of the libwebsockets project
+<a href="http://libwebsockets.org" target="blank">http://libwebsockets.org</a>
+</p>
+<p>
+openGalaxy makes use of <a href="https://dev.mysql.com/downloads/connector/c/" target="blank">MySQL Connector/C 6.1 (libmysqlclient)</a> which is
+released under the GNU General Public License version 2 and Copyright (c)
+2000, 2015, Oracle and/or its affiliates. All rights reserved.
+</p>
+<p>
+This product may include software developed by the OpenSSL Project for
+use in the OpenSSL Toolkit. <a href="http://www.openssl.org/" target="bkank">http://www.openssl.org/</a>
+</p>
+</p>
+This product makes use of zlib. openGalaxy gratefully acknoledges the
+contributions of Jean-loup Gailly and Mark Adler in creating the zlib
+general purpose compresssion library.
+</p>
+</div>
+</div><!--#openGalaxy-About-->
+
+<div id="defaultDialog"></div>
+
+<div id="reloadDialog">
+ <p><center><br><span class="red">
+  A server restart was detected (session mismatch) !
+ </span><br>
+  Please reload the page...
+ </center></p>
+</div>
+
+<div id="json-dialog"><div id="json"></div></div>
+
+<div id="openGalaxy-cli" class="commander">
+ <input class="ui-corner-all commander_input" id="commander_input" type="text" name="commander_input" placeholder=" Enter a galaxy command and press enter... (see API.TXT)" autofocus autocomplete>
+</div>
+
+<div id="loginDialog" class="loginDialog">
+ <input class="ui-corner-all loginDialog_input" id="loginDialog_username" type="text" name="loginDialog_username" placeholder="username" autofocus autocomplete>
+ <input class="ui-corner-all loginDialog_input" id="loginDialog_password" type="password" name="loginDialog_password" placeholder="password">
+</div>
+
+<!---->
+
+<script src="/external/jquery/jquery-2.2.3.min.js"></script>
+<script src="/external/jquery-ui/jquery-ui.min.js"></script>
+<script src="opengalaxy.js"></script>
+
+</body>
+</html>
+

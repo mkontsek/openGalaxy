@@ -1,0 +1,14 @@
+Example usage of the MySQL database created by openGalaxy:
+----------------------------------------------------------
+
+To demonstrate displaying messages written to the MySQL database that
+openGalaxy creates, a small example webinterface for installation on a
+webserver (like apache2) is included in the example directory:
+
+It is written using php5, JQuery and JQuery UI and displays decoded SIA
+messages in a web browser as soon as they are written to a MySQL database.
+
+How to set up a web server is beyond the scope of this readme, but
+the files in the example directory may be copied to the 'docroot' of your
+web server. The web server will need to support php5 and you'll need to
+adjust the settings in 'dbconnect.php'
